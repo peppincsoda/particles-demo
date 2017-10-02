@@ -156,7 +156,7 @@ namespace mathscript {
 
     void StreamTokenizer::CreateNumberToken(Token& token)
     {
-        std::istringstream stream(token.str_val);
+        istringstream stream(token.str_val);
         double val;
         stream >> val;
         if (stream.fail()) {

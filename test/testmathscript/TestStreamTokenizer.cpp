@@ -5,7 +5,6 @@
 
 #include <sstream>
 
-using namespace std;
 using namespace mathscript;
 
 TEST(StreamTokenizerTest, EndOfStream)

@@ -1,40 +1,11 @@
 #ifndef STREAMTOKENIZER_H
 #define STREAMTOKENIZER_H
 
-#include <string>
+#include "TokenizerInterface.h"
 
 namespace mathscript {
 
-    enum class TokenType
-    {
-        Invalid,
-
-        Plus,
-        Minus,
-        Asterisk,
-        Slash,
-        Caret,
-
-        OpeningParent,
-        ClosingParent,
-        Comma,
-
-        Number,
-        Identifier,
-
-        EndOfStream,
-    };
-
-    struct Token
-    {
-        TokenType type;
-        int column;
-
-        std::string str_val;
-        double dbl_val;
-    };
-
-    class StreamTokenizer
+    class StreamTokenizer : public TokenizerInterface
     {
     public:
         explicit StreamTokenizer(std::istream& input_stream);
@@ -45,11 +16,11 @@ namespace mathscript {
 
         StreamTokenizer& operator >> (Token& token);
 
+        void ReadToken(Token& token) override;
+
     private:
         int stream_get();
         void stream_unget();
-
-        void ReadToken(Token& token);
 
         static void CreateNumberToken(Token& token);
 
