@@ -9,6 +9,7 @@ using namespace mathscript;
 
 TEST(StreamTokenizerTest, EndOfStream)
 {
+    // TODO: istream& as member in StreamTokenizer looks problematic
     std::istringstream ss("");
 
     StreamTokenizer input(ss);
