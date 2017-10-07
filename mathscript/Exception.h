@@ -34,8 +34,36 @@ namespace mathscript {
         std::string message_;
     };
 
+    class ParserException : public Exception
+    {
+    public:
+        ParserException(int column, const std::string& message)
+            : Exception(message)
+            , column_(column)
+        {
+        }
+
+        explicit ParserException(int column, std::string&& message)
+            : Exception(std::move(message))
+            , column_(column)
+        {
+
+        }
+
+        int column() const
+        {
+            return column_;
+        }
+
+    private:
+        int column_;
+    };
+
+
 
     using RuntimeException = Exception;
+
+
 
 }
 

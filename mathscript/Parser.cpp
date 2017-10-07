@@ -1,19 +1,60 @@
 #include "Parser.h"
+#include "Exception.h"
 
 #include <vector>
 #include <stack>
 #include <algorithm> // reverse
+#include <unordered_map>
+#include <sstream>
 
 using namespace std;
 
 namespace mathscript {
 
+    class Parser::Impl
+    {
+    public:
+        explicit Impl(TokenizerInterface& tokenizer);
+        ~Impl();
+
+        std::unique_ptr<STNode> ParseInput();
+
+    private:
+        void ReadToken();
+        void ExpectToken(TokenType token_type);
+        bool AcceptToken(TokenType token_type);
+
+        std::unique_ptr<STExpr> ParseExpr();
+        std::unique_ptr<STTerm> ParseTerm();
+        std::unique_ptr<STFunc> ParseIdent();
+
+        TokenizerInterface& tokenizer_;
+
+        Token curr_token_;
+    };
+
     Parser::Parser(TokenizerInterface& tokenizer)
-        : tokenizer_(tokenizer)
+        : pimpl_(std::make_unique<Parser::Impl>(tokenizer))
     {
     }
 
     Parser::~Parser()
+    {
+
+    }
+
+    std::unique_ptr<STNode> Parser::ParseInput()
+    {
+        return pimpl_->ParseInput();
+    }
+
+    Parser::Impl::Impl(TokenizerInterface& tokenizer)
+        : tokenizer_(tokenizer)
+    {
+
+    }
+
+    Parser::Impl::~Impl()
     {
 
     }
@@ -45,7 +86,7 @@ namespace mathscript {
 
     static bool IsOpBefore(TokenType op1, TokenType op2)
     {
-        static unordered_map<TokenType, int> precedence_ =
+        static std::unordered_map<TokenType, int> precedence_ =
         {
             {TokenType::Plus    , 1},
             {TokenType::Minus   , 1},
@@ -60,7 +101,7 @@ namespace mathscript {
             Right,
         };
 
-        static unordered_map<TokenType, Associativity> associativity_ =
+        static std::unordered_map<TokenType, Associativity> associativity_ =
         {
             {TokenType::Plus    , Associativity::Left },
             {TokenType::Minus   , Associativity::Left },
@@ -76,24 +117,26 @@ namespace mathscript {
                 return false;
         }
 
-        return precedence_[op1] > precedence_[op2];
+        return precedence_[op1] >= precedence_[op2];
     }
 
-    void Parser::ReadToken()
+    void Parser::Impl::ReadToken()
     {
         tokenizer_.ReadToken(curr_token_);
     }
 
-    void Parser::ExpectToken(TokenType token_type)
+    void Parser::Impl::ExpectToken(TokenType token_type)
     {
         if (curr_token_.type == token_type) {
             ReadToken();
         } else {
-            // TODO:AddError() << curr_token_.column << ": Expected token '" <<  << "';
+            std::ostringstream os;
+            os << "Expected token '" << TokenTypeStr(token_type) << "'";
+            throw ParserException(curr_token_.column, os.str());
         }
     }
 
-    bool Parser::AcceptToken(TokenType token_type)
+    bool Parser::Impl::AcceptToken(TokenType token_type)
     {
         if (curr_token_.type == token_type) {
             ReadToken();
@@ -107,7 +150,7 @@ namespace mathscript {
      * INPUT = EXPR, eos
      * @return
      */
-    unique_ptr<STNode> Parser::ParseInput()
+    unique_ptr<STNode> Parser::Impl::ParseInput()
     {
         ReadToken();
 
@@ -177,7 +220,7 @@ namespace mathscript {
      * EXPR = TERM, {binop, TERM}
      * @return
      */
-    unique_ptr<STExpr> Parser::ParseExpr()
+    unique_ptr<STExpr> Parser::Impl::ParseExpr()
     {
         auto expr = make_unique<STExpr>();
         expr->AddTerm(ParseTerm());
@@ -198,7 +241,7 @@ namespace mathscript {
      * TERM = {unop}, ( number | IDENT | "(", EXPR, ")" )
      * @return
      */
-    unique_ptr<STTerm> Parser::ParseTerm()
+    unique_ptr<STTerm> Parser::Impl::ParseTerm()
     {
         auto term = make_unique<STTerm>();
 
@@ -222,7 +265,9 @@ namespace mathscript {
             ExpectToken(TokenType::ClosingParent);
 
         } else {
-            // TODO:AddError() << curr_token_.column << ": Unexpected token '" << curr_token_.str_val << "';
+            std::ostringstream os;
+            os << "Unexpected token '" << curr_token_.str_val << "'";
+            throw ParserException(curr_token_.column, os.str());
         }
 
         return term;
@@ -233,7 +278,7 @@ namespace mathscript {
      * IDENT = ident, [ "(", [ EXPR, {",", EXPR} ], ")" ]
      * @return
      */
-    unique_ptr<STFunc> Parser::ParseIdent()
+    unique_ptr<STFunc> Parser::Impl::ParseIdent()
     {
         auto func = make_unique<STFunc>();
 

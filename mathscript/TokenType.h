@@ -23,6 +23,8 @@ namespace mathscript {
 
         EndOfStream,
     };
+
+    const char* TokenTypeStr(TokenType token_type);
 }
 
 

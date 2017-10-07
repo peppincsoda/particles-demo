@@ -5,7 +5,6 @@
 #include "STNode.h"
 
 #include <memory>
-#include <unordered_map>
 
 namespace mathscript {
 
@@ -20,20 +19,9 @@ namespace mathscript {
 
         std::unique_ptr<STNode> ParseInput();
 
-        void RegisterFunc(const std::string& name, int num_params);
-
     private:
-        void ReadToken();
-        void ExpectToken(TokenType token_type);
-        bool AcceptToken(TokenType token_type);
-
-        std::unique_ptr<STExpr> ParseExpr();
-        std::unique_ptr<STTerm> ParseTerm();
-        std::unique_ptr<STFunc> ParseIdent();
-
-        TokenizerInterface& tokenizer_;
-
-        Token curr_token_;
+        class Impl;
+        std::unique_ptr<Impl> pimpl_;
     };
 
 }

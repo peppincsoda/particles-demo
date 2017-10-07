@@ -20,16 +20,7 @@ namespace mathscript {
                     item.term->Visit(*this);
 
                 } else {
-                    switch (item.op) {
-                    case TokenType::Plus:     os_ << '+'; break;
-                    case TokenType::Minus:    os_ << '-'; break;
-                    case TokenType::Asterisk: os_ << '*'; break;
-                    case TokenType::Slash:    os_ << '/'; break;
-                    case TokenType::Caret:    os_ << '^'; break;
-                    default:
-                        os_ << "?";
-                        break;
-                    }
+                    os_ << TokenTypeStr(item.op);
                 }
             }
         }
@@ -39,13 +30,7 @@ namespace mathscript {
             term.operand_->Visit(*this);
 
             for (const auto& op : term.unary_ops_) {
-                switch (op) {
-                case TokenType::Plus:     os_ << '+'; break;
-                case TokenType::Minus:    os_ << '-'; break;
-                default:
-                    os_ << "?";
-                    break;
-                }
+                os_ << TokenTypeStr(op);
             }
         }
 

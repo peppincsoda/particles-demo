@@ -4,6 +4,7 @@
 #include "mathscript/TokenizerInterface.h"
 #include "mathscript/Parser.h"
 #include "mathscript/STSerializer.h"
+#include "mathscript/Exception.h"
 
 using namespace mathscript;
 
@@ -21,6 +22,8 @@ public:
     {
         if (it_ != std::cend(tokens_)) {
             token = *it_++;
+        } else {
+            token.type = TokenType::EndOfStream;
         }
     }
 
@@ -89,6 +92,22 @@ TEST(ParserTest, AdditionIsLeftAssociative)
     auto str = SerializeST(*parser.ParseInput());
 
     EXPECT_STREQ("(3)(2)(1)++", str.c_str());
+}
+
+TEST(ParserTest, AdditionSubtractionSamePrecedence)
+{
+    MockTokenizer tokenizer({
+        {TokenType::Number, 0, "1", 1},
+        {TokenType::Minus , 2, "-", 0},
+        {TokenType::Number, 4, "2", 2},
+        {TokenType::Plus  , 6, "+", 0},
+        {TokenType::Number, 8, "3", 3},
+    });
+
+    Parser parser(tokenizer);
+    auto str = SerializeST(*parser.ParseInput());
+
+    EXPECT_STREQ("(3)(2)(1)-+", str.c_str());
 }
 
 TEST(ParserTest, PowerIsRightAssociative)
@@ -184,4 +203,22 @@ TEST(ParserTest, Function2Params)
     EXPECT_STREQ("(3)(2)foo", str.c_str());
 }
 
-// TODO: Add tests for errors, alternative function call syntax, etc.
+TEST(ParserErrorTest, InvalidToken)
+{
+    MockTokenizer tokenizer({
+        {TokenType::Invalid, 2, "#", 0},
+    });
+
+    try {
+        Parser parser(tokenizer);
+        parser.ParseInput();
+        FAIL() << "Expected ParserException";
+    } catch (ParserException& err) {
+        EXPECT_STREQ(err.what(), "Unexpected token '#'");
+        EXPECT_EQ(err.column(), 2);
+    } catch (...) {
+        FAIL() << "Expected ParserException";
+    }
+}
+
+// TODO: Add more tests for errors
