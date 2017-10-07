@@ -3,9 +3,7 @@
 
 #include "mathscript/TokenizerInterface.h"
 #include "mathscript/Parser.h"
-#include "mathscript/STNodePrintVisitor.h"
-
-#include <sstream>
+#include "mathscript/STSerializer.h"
 
 using namespace mathscript;
 
@@ -31,14 +29,6 @@ private:
     std::vector<Token>::const_iterator it_;
 };
 
-static std::string PrintST(std::unique_ptr<STNode>&& node)
-{
-    std::ostringstream os;
-    STNodePrintVisitor visitor(os);
-    node->Visit(visitor);
-    return os.str();
-}
-
 TEST(ParserTest, ReverseItems)
 {
     MockTokenizer tokenizer({
@@ -47,8 +37,8 @@ TEST(ParserTest, ReverseItems)
         {TokenType::Number, 4, "2", 2},
     });
 
-    Parser parser(&tokenizer);
-    auto str = PrintST(parser.ParseInput());
+    Parser parser(tokenizer);
+    auto str = SerializeST(*parser.ParseInput());
 
     EXPECT_STREQ("(2)(1)+", str.c_str());
 }
@@ -63,8 +53,8 @@ TEST(ParserTest, RemoveHigherPrecedenceOpFromStack)
         {TokenType::Number  , 8, "3", 3},
     });
 
-    Parser parser(&tokenizer);
-    auto str = PrintST(parser.ParseInput());
+    Parser parser(tokenizer);
+    auto str = SerializeST(*parser.ParseInput());
 
     EXPECT_STREQ("(3)(2)(1)*+", str.c_str());
 }
@@ -79,8 +69,8 @@ TEST(ParserTest, DoNotRemoveLowerPrecedenceOpFromStack)
         {TokenType::Number  , 8, "3", 3},
     });
 
-    Parser parser(&tokenizer);
-    auto str = PrintST(parser.ParseInput());
+    Parser parser(tokenizer);
+    auto str = SerializeST(*parser.ParseInput());
 
     EXPECT_STREQ("(3)(2)*(1)+", str.c_str());
 }
@@ -95,8 +85,8 @@ TEST(ParserTest, AdditionIsLeftAssociative)
         {TokenType::Number, 8, "3", 3},
     });
 
-    Parser parser(&tokenizer);
-    auto str = PrintST(parser.ParseInput());
+    Parser parser(tokenizer);
+    auto str = SerializeST(*parser.ParseInput());
 
     EXPECT_STREQ("(3)(2)(1)++", str.c_str());
 }
@@ -111,8 +101,8 @@ TEST(ParserTest, PowerIsRightAssociative)
         {TokenType::Number, 8, "3", 3},
     });
 
-    Parser parser(&tokenizer);
-    auto str = PrintST(parser.ParseInput());
+    Parser parser(tokenizer);
+    auto str = SerializeST(*parser.ParseInput());
 
     EXPECT_STREQ("(3)(2)^(1)^", str.c_str());
 }
@@ -127,10 +117,10 @@ TEST(ParserTest, UnaryOperators)
         {TokenType::Number  , 8, "2", 2},
     });
 
-    Parser parser(&tokenizer);
-    auto str = PrintST(parser.ParseInput());
+    Parser parser(tokenizer);
+    auto str = SerializeST(*parser.ParseInput());
 
-    EXPECT_STREQ("(-2)(+1)*", str.c_str());
+    EXPECT_STREQ("(2)-(1)+*", str.c_str());
 }
 
 TEST(ParserTest, SubExpression)
@@ -145,10 +135,10 @@ TEST(ParserTest, SubExpression)
         {TokenType::ClosingParent, 12, "(", 0},
     });
 
-    Parser parser(&tokenizer);
-    auto str = PrintST(parser.ParseInput());
+    Parser parser(tokenizer);
+    auto str = SerializeST(*parser.ParseInput());
 
-    EXPECT_STREQ("((3)(2)+)(1)*", str.c_str());
+    EXPECT_STREQ("(3)(2)+(1)*", str.c_str());
 }
 
 TEST(ParserTest, Variable)
@@ -157,13 +147,27 @@ TEST(ParserTest, Variable)
         {TokenType::Identifier, 0, "foo", 0},
     });
 
-    Parser parser(&tokenizer);
-    auto str = PrintST(parser.ParseInput());
+    Parser parser(tokenizer);
+    auto str = SerializeST(*parser.ParseInput());
 
-    EXPECT_STREQ("(foo())", str.c_str());
+    EXPECT_STREQ("foo", str.c_str());
 }
 
-TEST(ParserTest, Function)
+TEST(ParserTest, Function0Params)
+{
+    MockTokenizer tokenizer({
+        {TokenType::Identifier   ,  0, "foo", 0},
+        {TokenType::OpeningParent,  2, ")"  , 0},
+        {TokenType::ClosingParent, 10, "("  , 0},
+    });
+
+    Parser parser(tokenizer);
+    auto str = SerializeST(*parser.ParseInput());
+
+    EXPECT_STREQ("foo", str.c_str());
+}
+
+TEST(ParserTest, Function2Params)
 {
     MockTokenizer tokenizer({
         {TokenType::Identifier   ,  0, "foo", 0},
@@ -174,10 +178,10 @@ TEST(ParserTest, Function)
         {TokenType::ClosingParent, 10, "("  , 0},
     });
 
-    Parser parser(&tokenizer);
-    auto str = PrintST(parser.ParseInput());
+    Parser parser(tokenizer);
+    auto str = SerializeST(*parser.ParseInput());
 
-    EXPECT_STREQ("(foo((3),(2)))", str.c_str());
+    EXPECT_STREQ("(3)(2)foo", str.c_str());
 }
 
 // TODO: Add tests for errors, alternative function call syntax, etc.

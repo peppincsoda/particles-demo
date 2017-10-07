@@ -1,14 +1,15 @@
-#include "StreamTokenizer.h"
+#include "StringTokenizer.h"
 
 #include <sstream>
+
 #include <cassert>
 
 using namespace std;
 
 namespace mathscript {
 
-    StreamTokenizer::StreamTokenizer(istream& input_stream)
-        : input_stream_(input_stream)
+    StringTokenizer::StringTokenizer(const std::string& src_str)
+        : src_str_(src_str)
         , position_(0)
         , unget_called_(false)
         , last_ch_(0)
@@ -16,38 +17,49 @@ namespace mathscript {
 
     }
 
-    StreamTokenizer::~StreamTokenizer()
+    StringTokenizer::StringTokenizer(std::string&& src_str)
+        : src_str_(std::move(src_str))
+        , position_(0)
+        , unget_called_(false)
+        , last_ch_(0)
     {
 
     }
 
-    StreamTokenizer& StreamTokenizer::operator >> (Token& token)
+    StringTokenizer::~StringTokenizer()
+    {
+
+    }
+
+    StringTokenizer& StringTokenizer::operator >> (Token& token)
     {
         ReadToken(token);
         return *this;
     }
 
-    int StreamTokenizer::stream_get()
+    int StringTokenizer::stream_get()
     {
         if (unget_called_) {
             unget_called_ = false;
             return last_ch_;
         }
 
-        const int ch = input_stream_.get();
-        if (ch != EOF) {
-            position_++;
+        int ch;
+        if (position_ >= src_str_.length()) {
+            ch = EOF;
+        } else {
+            ch = src_str_[position_++];
         }
         last_ch_ = ch;
         return ch;
     }
 
-    void StreamTokenizer::stream_unget()
+    void StringTokenizer::stream_unget()
     {
         unget_called_ = true;
     }
 
-    void StreamTokenizer::ReadToken(Token& token)
+    void StringTokenizer::ReadToken(Token& token)
     {
         enum class State
         {
@@ -154,9 +166,9 @@ namespace mathscript {
         }
     }
 
-    void StreamTokenizer::CreateNumberToken(Token& token)
+    void StringTokenizer::CreateNumberToken(Token& token)
     {
-        istringstream stream(token.str_val);
+        std::istringstream stream(token.str_val);
         double val;
         stream >> val;
         if (stream.fail()) {

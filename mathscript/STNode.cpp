@@ -16,7 +16,7 @@ namespace mathscript {
         visitor.VisitExpr(*this);
     }
 
-    void STExpr::AddTerm(std::unique_ptr<STTerm>&& term)
+    void STExpr::AddTerm(std::unique_ptr<STNode>&& term)
     {
         Item item;
         item.type = Item::Type::Term;

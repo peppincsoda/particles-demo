@@ -9,30 +9,16 @@ using namespace mathscript;
 
 TEST(ProgramTest, SingleConst)
 {
-    RuntimeContext context;
+    RuntimeScope scope;
 
-    Program program;
-    program.EmitPushConst(42);
+    Program p;
+    p.EmitPushConst(42);
 
-    const auto r = program.Run(context);
+    const auto r = p.Run(scope);
     ASSERT_EQ(42, r);
 }
 
-TEST(ProgramTest, SingleVariable)
-{
-    const double v = 42;
-
-    RuntimeContext context;
-    context.AddFunc("v", [&v]() { return v; });
-
-    Program program;
-    program.EmitCallFunc("v");
-
-    const auto r = program.Run(context);
-    ASSERT_EQ(42, r);
-}
-
-TEST(ProgramTest, SingleFunction)
+TEST(ProgramTest, GenericFunction)
 {
     class TestFunc : public FuncInterface
     {
@@ -43,12 +29,39 @@ TEST(ProgramTest, SingleFunction)
         }
     };
 
-    RuntimeContext context;
-    context.AddFunc("test_func", std::make_unique<TestFunc>());
+    RuntimeScope scope;
+    scope.SetFunc("test_func", std::make_unique<TestFunc>());
 
-    Program program;
-    program.EmitCallFunc("test_func");
+    Program p;
+    p.EmitCallFunc("test_func");
 
-    const auto r = program.Run(context);
+    const auto r = p.Run(scope);
     ASSERT_EQ(42, r);
+}
+
+TEST(ProgramTest, NativeVariable)
+{
+    const double v = 42;
+
+    RuntimeScope scope;
+    scope.SetFunc("v", [&v]() { return v; });
+
+    Program p;
+    p.EmitCallFunc("v");
+
+    const auto r = p.Run(scope);
+    ASSERT_EQ(42, r);
+}
+
+TEST(ProgramTest, DefaultAddFunction)
+{
+    RuntimeScope scope;
+
+    Program p;
+    p.EmitPushConst(1);
+    p.EmitPushConst(2);
+    p.EmitCallFunc("__add__");
+
+    const auto r = p.Run(scope);
+    ASSERT_EQ(3, r);
 }

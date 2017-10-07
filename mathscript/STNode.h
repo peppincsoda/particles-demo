@@ -46,7 +46,7 @@ namespace mathscript {
 
         void Visit(STNodeVisitor& visitor) override;
 
-        void AddTerm(std::unique_ptr<STTerm>&& term);
+        void AddTerm(std::unique_ptr<STNode>&& term);
         void AddOp(TokenType op);
 
         struct Item
@@ -61,7 +61,7 @@ namespace mathscript {
             union
             {
                 TokenType op;
-                STTerm* term;
+                STNode* term;
             };
         };
 
@@ -88,7 +88,7 @@ namespace mathscript {
         void Visit(STNodeVisitor& visitor) override;
 
         std::string name_;
-        std::vector<std::unique_ptr<STExpr>> params_;
+        std::vector<std::unique_ptr<STNode>> params_;
     };
 
 }

@@ -1,18 +1,13 @@
 
 #include "gtest/gtest.h"
 
-#include "mathscript/StreamTokenizer.h"
-
-#include <sstream>
+#include "mathscript/StringTokenizer.h"
 
 using namespace mathscript;
 
-TEST(StreamTokenizerTest, EndOfStream)
+TEST(StringTokenizerTest, EndOfStream)
 {
-    // TODO: istream& as member in StreamTokenizer looks problematic
-    std::istringstream ss("");
-
-    StreamTokenizer input(ss);
+    StringTokenizer input("");
 
     Token t;
     input >> t;
@@ -21,11 +16,9 @@ TEST(StreamTokenizerTest, EndOfStream)
     EXPECT_EQ(t.type, TokenType::EndOfStream);
 }
 
-TEST(StreamTokenizerTest, Operators)
+TEST(StringTokenizerTest, Operators)
 {
-    std::istringstream ss("  +  -  *  /  ^ ( ) , ");
-
-    StreamTokenizer input(ss);
+    StringTokenizer input("  +  -  *  /  ^ ( ) , ");
 
     Token t;
     input >> t;
@@ -46,11 +39,9 @@ TEST(StreamTokenizerTest, Operators)
     EXPECT_EQ(t.type, TokenType::Comma);
 }
 
-TEST(StreamTokenizerTest, Numbers)
+TEST(StringTokenizerTest, Numbers)
 {
-    std::istringstream ss(" 12345  .345  12.  .  12.345");
-
-    StreamTokenizer input(ss);
+    StringTokenizer input(" 12345  .345  12.  .  12.345");
 
     Token t;
     input >> t;
@@ -68,11 +59,9 @@ TEST(StreamTokenizerTest, Numbers)
     EXPECT_EQ(t.dbl_val, 12.345);
 }
 
-TEST(StreamTokenizerTest, Identifiers)
+TEST(StringTokenizerTest, Identifiers)
 {
-    std::istringstream ss(" abcd_12 Abcd_12 _12 _ 12ab");
-
-    StreamTokenizer input(ss);
+    StringTokenizer input(" abcd_12 Abcd_12 _12 _ 12ab");
 
     Token t;
     input >> t;

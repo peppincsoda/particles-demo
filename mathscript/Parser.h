@@ -12,7 +12,7 @@ namespace mathscript {
     class Parser
     {
     public:
-        explicit Parser(TokenizerInterface* tokenizer);
+        explicit Parser(TokenizerInterface& tokenizer);
         ~Parser();
 
         Parser(const Parser&) = delete;
@@ -31,17 +31,9 @@ namespace mathscript {
         std::unique_ptr<STTerm> ParseTerm();
         std::unique_ptr<STFunc> ParseIdent();
 
-        TokenizerInterface* tokenizer_;
+        TokenizerInterface& tokenizer_;
 
         Token curr_token_;
-
-        struct Func
-        {
-            std::string name;
-            int num_params;
-        };
-
-        std::unordered_map<std::string, Func> functions_;
     };
 
 }

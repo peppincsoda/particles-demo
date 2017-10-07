@@ -8,7 +8,7 @@ using namespace std;
 
 namespace mathscript {
 
-    Parser::Parser(TokenizerInterface* tokenizer)
+    Parser::Parser(TokenizerInterface& tokenizer)
         : tokenizer_(tokenizer)
     {
     }
@@ -81,7 +81,7 @@ namespace mathscript {
 
     void Parser::ReadToken()
     {
-        tokenizer_->ReadToken(curr_token_);
+        tokenizer_.ReadToken(curr_token_);
     }
 
     void Parser::ExpectToken(TokenType token_type)
@@ -206,6 +206,7 @@ namespace mathscript {
             term->unary_ops_.push_back(curr_token_.type);
             ReadToken();
         }
+        reverse(begin(term->unary_ops_), end(term->unary_ops_));
 
         if (curr_token_.type == TokenType::Number) {
             auto num = make_unique<STNum>();
@@ -229,7 +230,7 @@ namespace mathscript {
 
     /**
      * @brief Parser::ParseIdent
-     * IDENT = ident, [( "(", [ EXPR, {",", EXPR} ], ")" | EXPR, {EXPR} )]
+     * IDENT = ident, [ "(", [ EXPR, {",", EXPR} ], ")" ]
      * @return
      */
     unique_ptr<STFunc> Parser::ParseIdent()
@@ -240,37 +241,18 @@ namespace mathscript {
         func->name_ = ident;
         ReadToken();
 
-        auto it = functions_.find(ident);
-        if (it == functions_.end()) {
-            // TODO:AddError() << curr_token_.column << ": Unknown identifier '" << identifier << "'";
-        }
-
         if (AcceptToken(TokenType::OpeningParent)) {
-            func->params_.push_back(ParseExpr());
-            while (curr_token_.type == TokenType::Comma) {
-                ReadToken();
+            if (!AcceptToken(TokenType::ClosingParent)) {
                 func->params_.push_back(ParseExpr());
+                while (curr_token_.type == TokenType::Comma) {
+                    ReadToken();
+                    func->params_.push_back(ParseExpr());
+                }
+                reverse(begin(func->params_), end(func->params_));
+                ExpectToken(TokenType::ClosingParent);
             }
-            reverse(begin(func->params_), end(func->params_));
-            ExpectToken(TokenType::ClosingParent);
-
-        } else if (it != functions_.end()) {
-            const auto& finfo = it->second;
-            if (finfo.num_params == -1) {
-                // TODO:AddError() << curr_token_.column << ": Functions with variable number of parameters must be called with ()";
-            }
-
-            for (int i = 0; i < finfo.num_params; i++) {
-                func->params_.push_back(ParseExpr());
-            }
-            reverse(begin(func->params_), end(func->params_));
         }
 
         return func;
-    }
-
-    void Parser::RegisterFunc(const string& name, int num_params)
-    {
-        functions_[name] = Func {name, num_params};
     }
 }
