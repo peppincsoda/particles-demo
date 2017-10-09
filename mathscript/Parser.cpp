@@ -147,7 +147,7 @@ namespace mathscript {
 
     /**
      * @brief Parser::ParseInput
-     * INPUT = EXPR, eos
+     * INPUT = EXPR, <end-of-stream>
      * @return
      */
     unique_ptr<STNode> Parser::Impl::ParseInput()

@@ -29,6 +29,15 @@ namespace mathscript {
 
             default_->SetFunc("__pos__", [](double x) { return x; });
             default_->SetFunc("__neg__", [](double x) { return -x; });
+
+            default_->SetFunc("min", [](double x, double y) { return std::min(x, y); });
+            default_->SetFunc("max", [](double x, double y) { return std::max(x, y); });
+
+            default_->SetFunc("abs", [](double x) { return std::abs(x); });
+            default_->SetFunc("sin", [](double x) { return std::sin(x); });
+            default_->SetFunc("cos", [](double x) { return std::cos(x); });
+            default_->SetFunc("sqr", [](double x) { return x * x; });
+            default_->SetFunc("sqrt", [](double x) { return std::sqrt(x); });
         }
 
         return default_.get();

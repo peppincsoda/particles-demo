@@ -12,11 +12,11 @@ namespace mathscript {
     public:
         Program();
 
-        Program(const Program&);
-        Program& operator=(const Program&) = delete;
+        Program(const Program&) = default;
+        Program& operator=(const Program&) = default;
 
-        Program(Program&&);
-        Program& operator=(Program&&) = delete;
+        Program(Program&&) = default;
+        Program& operator=(Program&&) = default;
 
         double Run(RuntimeScope& scope) const;
 

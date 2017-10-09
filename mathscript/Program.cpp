@@ -1,7 +1,6 @@
 #include "Program.h"
 #include "Exception.h"
 
-#include <climits>
 #include <cassert>
 
 using namespace std;
@@ -15,18 +14,6 @@ namespace mathscript {
     };
 
     Program::Program()
-    {
-
-    }
-
-    Program::Program(const Program& rhs)
-        : bytecode_(rhs.bytecode_)
-    {
-
-    }
-
-    Program::Program(Program&& rhs)
-        : bytecode_(std::move(rhs.bytecode_))
     {
 
     }

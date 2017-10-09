@@ -2,6 +2,7 @@
 #define COMPILER_H
 
 #include "Program.h"
+#include "Exception.h"
 
 namespace mathscript {
 

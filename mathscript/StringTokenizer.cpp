@@ -83,6 +83,13 @@ namespace mathscript {
 
                 token.column = position_;
 
+                if (c == EOF) {
+                    token.type = TokenType::EndOfStream;
+                    return;
+                }
+
+                token.str_val += c;
+
                 switch (c) {
                 case '+': token.type = TokenType::Plus; return;
                 case '-': token.type = TokenType::Minus; return;
@@ -95,19 +102,13 @@ namespace mathscript {
                 }
 
                 if ('0' <= c && c <= '9') {
-                    token.str_val += c;
                     state = State::IntPart;
                 } else if (c == '.') {
-                    token.str_val += c;
                     state = State::Dot;
                 } else if ( ('A' <= c && c <= 'Z')
                          || ('a' <= c && c <= 'z')
                          || (c == '_') ) {
-                    token.str_val += c;
                     state = State::Ident;
-                } else if (c == EOF) {
-                    token.type = TokenType::EndOfStream;
-                    return;
                 } else {
                     token.type = TokenType::Invalid;
                     return;
@@ -132,6 +133,7 @@ namespace mathscript {
                     token.str_val += c;
                     state = State::FracPart;
                 } else {
+                    stream_unget();
                     token.type = TokenType::Invalid;
                     return;
                 }

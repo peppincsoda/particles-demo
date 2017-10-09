@@ -22,7 +22,7 @@ namespace mathscript {
 
         case TokenType::EndOfStream: return "<end-of-stream>";
 
-        default: return "<???>";
+        default: return "<?>";
         }
     }
 
