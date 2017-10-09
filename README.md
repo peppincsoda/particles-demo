@@ -12,8 +12,6 @@ This is a simple particle editor application that demonstrates:
 
 * A simple property system
 
-I used it as a training material to discuss some of the topics above, and also in general about some C++ problems and design patterns.
-
 ![alt text](https://github.com/peppincsoda/particles-demo/raw/master/screenshot.png "Screenshot")
 
 
