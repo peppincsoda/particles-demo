@@ -73,8 +73,7 @@ const auto result = program.Run(scope);
 
 ```
 
-You can find all the built-in functions of MathScript in `RuntimeScope.cpp`.
-By registering functions into the runtime scope, it is possible to override built-in functions as well as to hide them:
+By registering functions into the runtime scope, it is also possible to override built-in functions as well as to hide them:
 
 ```cpp
 
