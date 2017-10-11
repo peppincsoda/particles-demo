@@ -13,7 +13,8 @@ namespace particles {
         else if (str == "false")
             return false;
 
-        throw mathscript::Exception("Cannot convert value to boolean");
+        // Cannot convert value to boolean
+        throw mathscript::Exception();
     }
 
     std::string ToString(bool v)
@@ -27,8 +28,10 @@ namespace particles {
         std::istringstream is(str);
         T val;
         is >> val;
-        if (is.fail())
-            throw mathscript::Exception("Cannot convert value");
+        if (is.fail()) {
+            // Cannot convert value
+            throw mathscript::Exception();
+        }
         return val;
     }
 

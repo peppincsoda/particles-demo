@@ -1,20 +1,47 @@
 #include "RuntimeScope.h"
+#include "Exception.h"
 
 #include <cmath>
 
 namespace mathscript {
 
-    void RuntimeStack::Push(double val)
+    RuntimeContext::RuntimeContext()
+        : stack_()
+        , ip_(0)
+    {
+
+    }
+
+    RuntimeContext::~RuntimeContext()
+    {
+
+    }
+
+    void RuntimeContext::Push(double val)
     {
         stack_.push(val);
     }
 
-    double RuntimeStack::Pop()
+    double RuntimeContext::Pop()
     {
+        if (stack_.empty())
+            throw StackUnderflowException(ip_);
+
         const auto val = stack_.top();
         stack_.pop();
         return val;
     }
+
+    int RuntimeContext::ip() const
+    {
+        return ip_;
+    }
+
+    void RuntimeContext::set_ip(int ip)
+    {
+        ip_ = ip;
+    }
+
 
     static RuntimeScope* DefaultRuntimeScope()
     {
@@ -79,31 +106,50 @@ namespace mathscript {
 
         }
 
-        void Call(RuntimeStack& stack) override;
+        void Call(RuntimeContext& context) override;
+        int GetNumParams() const override;
 
     private:
         std::function<_Fn> fn_;
     };
 
     template<>
-    void FuncAdapter<double ()>::Call(RuntimeStack& stack)
+    void FuncAdapter<double ()>::Call(RuntimeContext& context)
     {
-        stack.Push(fn_());
+        context.Push(fn_());
     }
 
     template<>
-    void FuncAdapter<double (double)>::Call(RuntimeStack& stack)
+    void FuncAdapter<double (double)>::Call(RuntimeContext& context)
     {
-        const auto p1 = stack.Pop();
-        stack.Push(fn_(p1));
+        const auto p1 = context.Pop();
+        context.Push(fn_(p1));
     }
 
     template<>
-    void FuncAdapter<double (double, double)>::Call(RuntimeStack& stack)
+    void FuncAdapter<double (double, double)>::Call(RuntimeContext& context)
     {
-        const auto p1 = stack.Pop();
-        const auto p2 = stack.Pop();
-        stack.Push(fn_(p1, p2));
+        const auto p1 = context.Pop();
+        const auto p2 = context.Pop();
+        context.Push(fn_(p1, p2));
+    }
+
+    template<>
+    int FuncAdapter<double ()>::GetNumParams() const
+    {
+        return 0;
+    }
+
+    template<>
+    int FuncAdapter<double (double)>::GetNumParams() const
+    {
+        return 1;
+    }
+
+    template<>
+    int FuncAdapter<double (double, double)>::GetNumParams() const
+    {
+        return 2;
     }
 
     void RuntimeScope::SetFunc(const std::string& name, std::function<double ()>&& fn)

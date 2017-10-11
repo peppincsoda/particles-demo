@@ -9,21 +9,29 @@
 
 namespace mathscript {
 
-    class RuntimeStack
+    class RuntimeContext
     {
     public:
+        RuntimeContext();
+        ~RuntimeContext();
+
         void Push(double val);
         double Pop();
 
+        int ip() const;
+        void set_ip(int ip);
+
     private:
         std::stack<double> stack_;
+        int ip_;
     };
 
     class FuncInterface
     {
     public:
         virtual ~FuncInterface() {}
-        virtual void Call(RuntimeStack& stack) = 0;
+        virtual void Call(RuntimeContext& context) = 0;
+        virtual int GetNumParams() const = 0;
     };
 
     class RuntimeScope

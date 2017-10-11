@@ -24,6 +24,12 @@ public:
             token = *it_++;
         } else {
             token.type = TokenType::EndOfStream;
+            if (tokens_.empty()) {
+                token.column = 0;
+            } else {
+                const auto& last = *(it_ - 1);
+                token.column = last.column + last.str_val.length();
+            }
         }
     }
 
@@ -147,11 +153,11 @@ TEST(ParserTest, SubExpression)
     MockTokenizer tokenizer({
         {TokenType::Number       ,  0, "1", 1},
         {TokenType::Asterisk     ,  2, "*", 0},
-        {TokenType::OpeningParent,  4, ")", 0},
+        {TokenType::OpeningParent,  4, "(", 0},
         {TokenType::Number       ,  6, "2", 2},
         {TokenType::Plus         ,  8, "+", 0},
         {TokenType::Number       , 10, "3", 3},
-        {TokenType::ClosingParent, 12, "(", 0},
+        {TokenType::ClosingParent, 12, ")", 0},
     });
 
     Parser parser(tokenizer);
@@ -176,8 +182,8 @@ TEST(ParserTest, Function0Params)
 {
     MockTokenizer tokenizer({
         {TokenType::Identifier   ,  0, "foo", 0},
-        {TokenType::OpeningParent,  2, ")"  , 0},
-        {TokenType::ClosingParent, 10, "("  , 0},
+        {TokenType::OpeningParent,  2, "("  , 0},
+        {TokenType::ClosingParent, 10, ")"  , 0},
     });
 
     Parser parser(tokenizer);
@@ -190,11 +196,11 @@ TEST(ParserTest, Function2Params)
 {
     MockTokenizer tokenizer({
         {TokenType::Identifier   ,  0, "foo", 0},
-        {TokenType::OpeningParent,  2, ")"  , 0},
+        {TokenType::OpeningParent,  2, "("  , 0},
         {TokenType::Number       ,  4, "2"  , 2},
         {TokenType::Comma        ,  6, ","  , 0},
         {TokenType::Number       ,  8, "3"  , 3},
-        {TokenType::ClosingParent, 10, "("  , 0},
+        {TokenType::ClosingParent, 10, ")"  , 0},
     });
 
     Parser parser(tokenizer);
@@ -203,21 +209,40 @@ TEST(ParserTest, Function2Params)
     EXPECT_STREQ("(3)(2)foo", str.c_str());
 }
 
-TEST(ParserErrorTest, InvalidToken)
+TEST(ParserErrorTest, UnexpectedToken)
 {
     MockTokenizer tokenizer({
-        {TokenType::Invalid, 2, "#", 0},
+        {TokenType::Asterisk, 0, "*", 0},
     });
 
     try {
         Parser parser(tokenizer);
         parser.ParseInput();
-        FAIL() << "Expected ParserException";
-    } catch (ParserException& err) {
-        EXPECT_STREQ(err.what(), "Unexpected token '#'");
-        EXPECT_EQ(err.column(), 2);
+        FAIL() << "Expected UnexpectedTokenException";
+    } catch (UnexpectedTokenException& err) {
+        EXPECT_EQ(err.column(), 0);
+        EXPECT_STREQ(err.token().c_str(), "*");
     } catch (...) {
-        FAIL() << "Expected ParserException";
+        FAIL() << "Expected UnexpectedTokenException";
+    }
+}
+
+TEST(ParserErrorTest, ExpectedToken)
+{
+    MockTokenizer tokenizer({
+        {TokenType::OpeningParent, 0, "(", 0},
+        {TokenType::Number       , 1, "1", 1},
+    });
+
+    try {
+        Parser parser(tokenizer);
+        parser.ParseInput();
+        FAIL() << "Expected ExpectedTokenException";
+    } catch (ExpectedTokenException& err) {
+        EXPECT_EQ(err.column(), 2);
+        EXPECT_STREQ(err.token().c_str(), ")");
+    } catch (...) {
+        FAIL() << "Expected ExpectedTokenException";
     }
 }
 

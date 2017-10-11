@@ -130,9 +130,7 @@ namespace mathscript {
         if (curr_token_.type == token_type) {
             ReadToken();
         } else {
-            std::ostringstream os;
-            os << "Expected token '" << TokenTypeStr(token_type) << "'";
-            throw ParserException(curr_token_.column, os.str());
+            throw ExpectedTokenException(curr_token_.column, TokenTypeStr(token_type));
         }
     }
 
@@ -265,9 +263,7 @@ namespace mathscript {
             ExpectToken(TokenType::ClosingParent);
 
         } else {
-            std::ostringstream os;
-            os << "Unexpected token '" << curr_token_.str_val << "'";
-            throw ParserException(curr_token_.column, os.str());
+            throw UnexpectedTokenException(curr_token_.column, curr_token_.str_val);
         }
 
         return term;

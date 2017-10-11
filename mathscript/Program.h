@@ -21,12 +21,9 @@ namespace mathscript {
         double Run(RuntimeScope& scope) const;
 
         void EmitPushConst(double val);
-        void EmitCallFunc(const std::string& name);
+        void EmitCallFunc(const std::string& name, int num_params);
 
     private:
-        static double ReadDouble(const char*& ip);
-        static std::string ReadStr(const char*& ip);
-
         std::vector<char> bytecode_;
     };
 }

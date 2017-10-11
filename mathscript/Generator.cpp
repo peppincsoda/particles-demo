@@ -22,19 +22,19 @@ namespace mathscript {
                 } else {
                     switch (item.op) {
                     case TokenType::Plus:
-                        program_.EmitCallFunc("__add__");
+                        program_.EmitCallFunc("__add__", 2);
                         break;
                     case TokenType::Minus:
-                        program_.EmitCallFunc("__sub__");
+                        program_.EmitCallFunc("__sub__", 2);
                         break;
                     case TokenType::Asterisk:
-                        program_.EmitCallFunc("__mul__");
+                        program_.EmitCallFunc("__mul__", 2);
                         break;
                     case TokenType::Slash:
-                        program_.EmitCallFunc("__div__");
+                        program_.EmitCallFunc("__div__", 2);
                         break;
                     case TokenType::Caret:
-                        program_.EmitCallFunc("__pow__");
+                        program_.EmitCallFunc("__pow__", 2);
                         break;
                     default:
                         assert(0);
@@ -50,10 +50,10 @@ namespace mathscript {
             for (const auto& op : term.unary_ops_) {
                 switch (op) {
                 case TokenType::Plus:
-                    program_.EmitCallFunc("__pos__");
+                    program_.EmitCallFunc("__pos__", 1);
                     break;
                 case TokenType::Minus:
-                    program_.EmitCallFunc("__neg__");
+                    program_.EmitCallFunc("__neg__", 1);
                     break;
                 default:
                     assert(0);
@@ -72,7 +72,7 @@ namespace mathscript {
                 param->Visit(*this);
             }
 
-            program_.EmitCallFunc(func.name_);
+            program_.EmitCallFunc(func.name_, func.params_.size());
         }
 
     private:

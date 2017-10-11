@@ -40,9 +40,14 @@ TEST(GeneratorTest, GenericFunction)
     class Increment : public FuncInterface
     {
     public:
-        void Call(RuntimeStack &stack) override
+        void Call(RuntimeContext &context) override
         {
-            stack.Push(stack.Pop() + 1);
+            context.Push(context.Pop() + 1);
+        }
+
+        int GetNumParams() const
+        {
+            return 1;
         }
     };
 
