@@ -26,8 +26,8 @@ int main()
 }
 ```
 
-The expressions can contain unary `+ -` and binary `+ - * /` operators with their usual semantics. '^' means exponentiation
-in this language (and is right-associative), and several built-in functions can be called,
+The expressions can contain unary `+ -` and binary `+ - * /` operators with their usual semantics. `^` means exponentiation
+in this language (and is right-associative), and several built-in functions can be called
 like `sqrt`, `sin`, `cos`, etc. You can check the source of `mathscript::RuntimeScope` to get the full list of
 built-in functions.
 
