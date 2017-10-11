@@ -20,16 +20,23 @@ int main()
     mathscript::RuntimeScope scope;
     const auto result = program.Run(scope);
 
-    cout << result << endl;; // prints 5
+    cout << result << endl; // prints 5
 
     return 0;
 }
 ```
 
+The expressions can contain unary `+ -` and binary `+ - * /` operators with their usual semantics. '^' means exponentiation
+in this language (and is right-associative), and several built-in functions can be called,
+like `sqrt`, `sin`, `cos`, etc. You can check the source of `mathscript::RuntimeScope` to get the full list of
+built-in functions.
+
 The MathScript language is dynamically typed, that is, the compiler only checks if the syntactic rules are followed
-but doesn't know about the actual functions called in the expression. These functions are looked up in the runtime scope
-only when the expression is evaluated. At this point they should be defined or a runtime exception will be thrown.
-So having an undefined function in the expression will throw a `mathscript::RuntimeException` when `Run` is called.
+but it doesn't know about the semantics of the actual functions called in the expression or even if they exist.
+These functions are looked up in the runtime scope only when the expression is evaluated.
+At this point they should be defined or a runtime exception will be thrown.
+More precisely, having an undefined function in the expression will throw a `mathscript::RuntimeException` when `Run` is called.
+
 How can we define functions in MathScript? Well, you cannot define functions (yet?), but you can register native functions
 into the engine by adding them to the runtime scope:
 
