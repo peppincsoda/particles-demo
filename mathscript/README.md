@@ -74,7 +74,6 @@ By registering functions into the runtime scope, it is possible to override buil
 // Overriding `max`
 scope.SetFunc("max", [](double x, double y) { return std::min(x, y); });
 
-// TODO: TEST
 // Using `min` is not allowed
 scope.SetFunc("min", nullptr);
 
@@ -112,8 +111,23 @@ engine), but you can override their implementation as well using special functio
 ```cpp
 
 mathscript::RuntimeScope scope;
-global_scope.SetFunc("__add__", [](double x, double y) { return std::pow(x, y); });
+global_scope.SetFunc("__mul__", [](double x, double y) { return std::pow(x, y); });
+
+const auto r1 = mathscript::Compile("2 * 3").Run(scope);
+// r1 is 8
+
+const auto r2 = mathscript::Compile("2 * 3 * 2").Run(scope);
+// r2 is 64
 
 ```
 
-Yes, the idea comes from Python.
+(Yes, these special names were inspired by Python.)
+Note that `r2` is 64 even as we turned multiplication into exponentiation because the left-associativity of the operator
+did not change. The built-in exponentiation is right-associative as expected:
+
+```cpp
+
+const auto r3 = mathscript::Compile("2 ^ 3 ^ 2").Run(scope);
+// r3 is 512
+
+```
