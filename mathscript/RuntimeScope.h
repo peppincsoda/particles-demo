@@ -46,6 +46,7 @@ namespace mathscript {
         FuncInterface* GetFunc(const std::string& name);
 
         void SetFunc(const std::string& name, std::unique_ptr<FuncInterface>&& func);
+        void SetFunc(const std::string& name, std::nullptr_t);
 
         void SetFunc(const std::string& name, std::function<double ()>&& fn);
         void SetFunc(const std::string& name, std::function<double (double)>&& fn);

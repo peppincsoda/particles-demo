@@ -96,6 +96,11 @@ namespace mathscript {
         functions_[name] = std::move(func);
     }
 
+    void RuntimeScope::SetFunc(const std::string& name, std::nullptr_t)
+    {
+        functions_[name] = nullptr;
+    }
+
     template<typename _Fn>
     class FuncAdapter : public FuncInterface
     {

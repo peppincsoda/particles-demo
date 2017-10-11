@@ -29,3 +29,20 @@ TEST(MathScriptTest, ComplexExample)
     const auto ret = program.Run(scope);
     EXPECT_EQ(270, ret);
 }
+
+TEST(MathScriptTest, HideFunction)
+{
+    auto program = Compile("min(1,2)");
+
+    RuntimeScope scope;
+    scope.SetFunc("min", nullptr);
+
+    try {
+        program.Run(scope);
+        FAIL() << "Expected FunctionNotFoundException";
+    } catch (FunctionNotFoundException& err) {
+        EXPECT_STREQ(err.name().c_str(), "min");
+    } catch (...) {
+        FAIL() << "Expected FunctionNotFoundException";
+    }
+}
