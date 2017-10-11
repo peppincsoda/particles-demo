@@ -111,7 +111,7 @@ engine), but you can override their implementation as well using special functio
 ```cpp
 
 mathscript::RuntimeScope scope;
-global_scope.SetFunc("__mul__", [](double x, double y) { return std::pow(x, y); });
+scope.SetFunc("__mul__", [](double x, double y) { return std::pow(x, y); });
 
 const auto r1 = mathscript::Compile("2 * 3").Run(scope);
 // r1 is 8
