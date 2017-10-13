@@ -6,6 +6,7 @@
 
 namespace mathscript {
 
+    //! Emit code into `program` while traversing the AST given by `node`.
     void GenerateCode(STNode& node, Program& program);
 
 }

@@ -14,6 +14,7 @@ namespace mathscript {
     class STNum;
     class STFunc;
 
+    //! Abstract AST node visitor.
     class STNodeVisitor
     {
     public:
@@ -29,6 +30,7 @@ namespace mathscript {
         STNodeVisitor& operator=(const STNodeVisitor&) = delete;
     };
 
+    //! AST node base class.
     struct STNode
     {
         STNode() {}
@@ -40,6 +42,7 @@ namespace mathscript {
         STNode& operator=(const STNode&) = delete;
     };
 
+    //! AST expression node: contains binary operators and subexpressions in RPN.
     struct STExpr : public STNode
     {
         ~STExpr();
@@ -68,6 +71,7 @@ namespace mathscript {
         std::vector<Item> items_;
     };
 
+    //! AST term node: contains unary operators in reversed order of application and the operand.
     struct STTerm : public STNode
     {
         void Visit(STNodeVisitor& visitor) override;
@@ -76,6 +80,7 @@ namespace mathscript {
         std::unique_ptr<STNode> operand_;
     };
 
+    //! AST constant node
     struct STNum : public STNode
     {
         void Visit(STNodeVisitor& visitor) override;
@@ -83,6 +88,7 @@ namespace mathscript {
         double dbl_val_;
     };
 
+    //! AST function node: parameters are stored in reverse order.
     struct STFunc : public STNode
     {
         void Visit(STNodeVisitor& visitor) override;

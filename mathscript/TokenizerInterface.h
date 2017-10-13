@@ -12,7 +12,10 @@ namespace mathscript {
         TokenType type;
         int column;
 
+        //! The string of the token
         std::string str_val;
+
+        //! If `type == TokenType::Number`, this is the value
         double dbl_val;
     };
 

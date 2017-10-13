@@ -7,8 +7,10 @@
 
 namespace mathscript {
 
+    //! Dump the contents of the AST to the output stream.
     void SerializeST(STNode& node, std::ostream& os);
 
+    //! Dump the contents of the AST to a string.
     std::string SerializeST(STNode& node);
 
 }

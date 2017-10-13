@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <stack>
-#include <algorithm> // reverse
+#include <algorithm> // std::reverse
 #include <unordered_map>
 #include <sstream>
 
@@ -17,15 +17,24 @@ namespace mathscript {
         explicit Impl(TokenizerInterface& tokenizer);
         ~Impl();
 
+        //! Rule: INPUT = EXPR <end-of-stream>
         std::unique_ptr<STNode> ParseInput();
 
     private:
+        //! Skip the current token.
         void ReadToken();
+        //! If the current token has the type of `token_type`, read it, otherwise throw an exception.
         void ExpectToken(TokenType token_type);
+        //! If the current token has the type of `token_type`, read it and return true, otherwise return false.
         bool AcceptToken(TokenType token_type);
 
+        //! Rule: EXPR = TERM (binop TERM)*
         std::unique_ptr<STExpr> ParseExpr();
+
+        //! Rule: TERM = unop* ( number | IDENT | '(' EXPR ')' )
         std::unique_ptr<STTerm> ParseTerm();
+
+        //! Rule: IDENT = ident [ '(' [ EXPR (',' EXPR)* ] ')' ]
         std::unique_ptr<STFunc> ParseIdent();
 
         TokenizerInterface& tokenizer_;
@@ -84,6 +93,7 @@ namespace mathscript {
         }
     }
 
+    //! Returns true if `op1` must be applied before `op2`.
     static bool IsOpBefore(TokenType op1, TokenType op2)
     {
         static std::unordered_map<TokenType, int> precedence_ =
@@ -143,11 +153,6 @@ namespace mathscript {
         return false;
     }
 
-    /**
-     * @brief Parser::ParseInput
-     * INPUT = EXPR, <end-of-stream>
-     * @return
-     */
     unique_ptr<STNode> Parser::Impl::ParseInput()
     {
         ReadToken();
@@ -157,10 +162,7 @@ namespace mathscript {
         return expr;
     }
 
-    /**
-     * @brief Convert the expression to Reverse Polish notation (RPN) using the Shunting-yard algorithm.
-     * @param [in,out] items The array representing the expression.
-     */
+    //! Convert the expression to Reverse Polish notation (RPN) using the Shunting-yard algorithm.
     static void ConvertToRPN(vector<STExpr::Item>& items)
     {
         stack<STExpr::Item> ops;
@@ -182,11 +184,7 @@ namespace mathscript {
         }
     }
 
-    /**
-     * @brief Reverse the order of the operands in the RPN.
-     * @param [in,out] first,last
-     *                 Iterators of the range to be reversed.
-     */
+    //! Reverse the order of the operands in the RPN.
     static void Reverse(vector<STExpr::Item>::iterator first, vector<STExpr::Item>::iterator last)
     {
         --last;
@@ -213,11 +211,6 @@ namespace mathscript {
         copy(begin(first_part), end(first_part), next_it);
     }
 
-    /**
-     * @brief Parser::ParseExpr
-     * EXPR = TERM, {binop, TERM}
-     * @return
-     */
     unique_ptr<STExpr> Parser::Impl::ParseExpr()
     {
         auto expr = make_unique<STExpr>();
@@ -234,11 +227,6 @@ namespace mathscript {
         return expr;
     }
 
-    /**
-     * @brief Parser::ParseTerm
-     * TERM = {unop}, ( number | IDENT | "(", EXPR, ")" )
-     * @return
-     */
     unique_ptr<STTerm> Parser::Impl::ParseTerm()
     {
         auto term = make_unique<STTerm>();
@@ -269,11 +257,6 @@ namespace mathscript {
         return term;
     }
 
-    /**
-     * @brief Parser::ParseIdent
-     * IDENT = ident, [ "(", [ EXPR, {",", EXPR} ], ")" ]
-     * @return
-     */
     unique_ptr<STFunc> Parser::Impl::ParseIdent()
     {
         auto func = make_unique<STFunc>();
