@@ -1,20 +1,18 @@
 #include "Properties.h"
 
-#include "mathscript/Exception.h"
-
 #include <sstream>
 
 namespace particles {
 
-    bool FromString(const std::string& str, bool)
+    bool FromString(const std::string& str, bool& v)
     {
         if (str == "true")
-            return true;
+            v = true;
         else if (str == "false")
+            v = false;
+        else
             return false;
-
-        // Cannot convert value to boolean
-        throw mathscript::Exception();
+        return true;
     }
 
     std::string ToString(bool v)
@@ -23,16 +21,13 @@ namespace particles {
     }
 
     template<class T>
-    T FromString(const std::string& str)
+    bool FromString(const std::string& str, T& v)
     {
         std::istringstream is(str);
-        T val;
-        is >> val;
-        if (is.fail()) {
-            // Cannot convert value
-            throw mathscript::Exception();
-        }
-        return val;
+        is >> v;
+        if (is.fail())
+            return false;
+        return true;
     }
 
     template<class T>
@@ -43,9 +38,9 @@ namespace particles {
         return os.str();
     }
 
-    int FromString(const std::string& str, int)
+    bool FromString(const std::string& str, int& v)
     {
-        return FromString<int>(str);
+        return FromString<int>(str, v);
     }
 
     std::string ToString(int v)
@@ -53,9 +48,9 @@ namespace particles {
         return ToString<int>(v);
     }
 
-    float FromString(const std::string& str, float)
+    bool FromString(const std::string& str, float& v)
     {
-        return FromString<float>(str);
+        return FromString<float>(str, v);
     }
 
     std::string ToString(float v)
@@ -63,9 +58,10 @@ namespace particles {
         return ToString<float>(v);
     }
 
-    std::string FromString(const std::string& str, std::string)
+    bool FromString(const std::string& str, std::string& v)
     {
-        return str;
+        v = str;
+        return true;
     }
 
     std::string ToString(const std::string& v)

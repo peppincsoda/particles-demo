@@ -9,7 +9,12 @@ namespace gfx {
                     "")
         , gWorldViewProj_location_(0)
     {
-        gWorldViewProj_location_ = GLFuncs()->glGetUniformLocation(shader_program_, "gWorldViewProj");
+    }
+
+    bool CommonTechnique::OnBuild(GLuint shader_program)
+    {
+        gWorldViewProj_location_ = GLFuncs()->glGetUniformLocation(shader_program, "gWorldViewProj");
+        return true;
     }
 
     void CommonTechnique::SetWorldViewProj(const Matrix4x4& wvp)

@@ -1,22 +1,9 @@
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 
-#include <exception>
 #include <string>
 
-namespace filesys {
-
-    class FileSystemException : public std::exception
-    {
-    public:
-        explicit FileSystemException(const std::string& message);
-
-        const char* what() const noexcept override;
-
-    private:
-        std::string message_;
-    };
-
+namespace core {
 
     class FileSystem
     {
@@ -31,7 +18,7 @@ namespace filesys {
         FileSystem& operator=(FileSystem&&) = default;
 
         std::string GetRealPath(const std::string& path) const;
-        std::string GetFileAsString(const std::string& path) const;
+        bool GetFileAsString(const std::string& path, std::string& content) const;
 
     private:
         std::string root_path_;

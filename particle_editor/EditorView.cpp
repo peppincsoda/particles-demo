@@ -1,5 +1,6 @@
 #include "EditorView.h"
 
+#include "particles/SpriteEmitterSrc.h"
 #include "particles/SpriteEmitterType.h"
 #include "particles/SpriteEmitter.h"
 
@@ -11,24 +12,17 @@
 #include "gfx/SpriteTechnique.h"
 #include "gfx/SpriteMesh.h"
 
-#include "filesys/FileSystem.h"
-
 #include <QMouseEvent>
+#include <QMessageBox>
+#include <QApplication>
 
-#include <QDebug>
 #include <QOpenGLFunctions_3_2_Core>
 
-#include <cassert>
-
-// These exports are needed to turn on 3D accelerated graphics on computers having multiple adapters.
-
-// NVIDIA
+//! These exports are needed to turn on 3D accelerated graphics on computers having multiple adapters.
 extern "C" {
+    //! For NVIDIA
     __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
-}
-
-// AMD
-extern "C" {
+    //! For AMD
     __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 
@@ -39,15 +33,14 @@ namespace particle_editor {
         , camera_()
         , common_technique_()
         , grid_mesh_()
-        , sprite_emitter_type_(std::make_unique<particles::SpriteEmitterType>())
+        , sprite_emitter_src_(std::make_unique<particles::SpriteEmitterSrc>())
+        , sprite_emitter_type_()
         , sprite_emitter_()
-        , texture_()
         , sprite_technique_()
         , sprite_mesh_()
         , wireframe_mode_(false)
         , last_position_()
     {
-        RestartEffects();
     }
 
     EditorView::~EditorView()
@@ -61,10 +54,17 @@ namespace particle_editor {
 
         gfx::SetGLFuncs(f);
 
-        camera_ = std::make_unique<gfx::Camera>();
         common_technique_ = std::make_unique<gfx::CommonTechnique>();
-        grid_mesh_ = std::make_unique<gfx::GridMesh>(11, 1);
         sprite_technique_ = std::make_unique<gfx::SpriteTechnique>();
+        if (!common_technique_->Build() ||
+            !sprite_technique_->Build()) {
+            QMessageBox::critical(this, "ERROR", "Cannot compile shaders, see the log for details");
+            QApplication::quit();
+            return;
+        }
+
+        camera_ = std::make_unique<gfx::Camera>();
+        grid_mesh_ = std::make_unique<gfx::GridMesh>(11, 1);
         sprite_mesh_ = std::make_unique<gfx::SpriteMesh>();
 
         f->glClearColor(0, 0, 0, 0);
@@ -73,24 +73,14 @@ namespace particle_editor {
         f->glCullFace(GL_BACK);
         f->glEnable(GL_CULL_FACE);
 
-        // TODO: error handling; move this into its place
-        QImage texture_image_;
-        if (!texture_image_.load(filesys::TheFileSystem().GetRealPath("/textures/white-ink-spot-md.png").c_str()))
-            assert(0);
-        const auto format = texture_image_.format();
-        if (format != QImage::Format_ARGB32)
-            assert(0);
-
-        texture_ = std::make_unique<gfx::Texture2D>(texture_image_.width(),
-                                                    texture_image_.height(),
-                                                    texture_image_.bits());
-
         f->glDepthMask(GL_TRUE);
         f->glEnable(GL_DEPTH_TEST);
 
         f->glEnable(GL_BLEND);
         f->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         f->glBlendColor(1, 1, 1, 1);
+
+        RestartEffects();
     }
 
     void EditorView::resizeGL(int width, int height)
@@ -125,9 +115,9 @@ namespace particle_editor {
 
         grid_mesh_->Render();
 
-        //=======
-        // SPRITE
-        //=======
+        //========
+        // SPRITES
+        //========
         gfx::Matrix4x4 view_proj(proj * view);
 
         sprite_technique_->Use();
@@ -135,7 +125,7 @@ namespace particle_editor {
         sprite_technique_->SetDiffuseTextureUnit(0);
         sprite_technique_->SetEyePos(camera_->eye_position());
 
-        texture_->Bind(GL_TEXTURE0);
+        sprite_emitter_type_->texture()->Bind(GL_TEXTURE0);
 
         sprite_mesh_->Clear();
         sprite_emitter_->WriteMesh(*sprite_mesh_);
@@ -179,12 +169,13 @@ namespace particle_editor {
 
     void EditorView::RestartEffects()
     {
+        sprite_emitter_type_ = sprite_emitter_src_->Build();
         sprite_emitter_ = std::make_unique<particles::SpriteEmitter>(*sprite_emitter_type_, 0);
     }
 
-    particles::SpriteEmitterType* EditorView::sprite_emitter_type()
+    particles::SpriteEmitterSrc* EditorView::sprite_emitter_src()
     {
-        return sprite_emitter_type_.get();
+        return sprite_emitter_src_.get();
     }
 
 }

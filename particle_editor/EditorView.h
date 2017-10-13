@@ -2,6 +2,7 @@
 #define EDITORVIEW_H
 
 namespace particles {
+    class SpriteEmitterSrc;
     class SpriteEmitterType;
     class SpriteEmitter;
 }
@@ -29,7 +30,7 @@ namespace particle_editor {
         explicit EditorView(QWidget* parent = nullptr);
         ~EditorView();
 
-        particles::SpriteEmitterType* sprite_emitter_type();
+        particles::SpriteEmitterSrc* sprite_emitter_src();
 
         void RestartEffects();
 
@@ -50,9 +51,9 @@ namespace particle_editor {
         std::unique_ptr<gfx::CommonTechnique> common_technique_;
         std::unique_ptr<gfx::GridMesh> grid_mesh_;
 
+        std::unique_ptr<particles::SpriteEmitterSrc> sprite_emitter_src_;
         std::unique_ptr<particles::SpriteEmitterType> sprite_emitter_type_;
         std::unique_ptr<particles::SpriteEmitter> sprite_emitter_;
-        std::unique_ptr<gfx::Texture2D> texture_;
         std::unique_ptr<gfx::SpriteTechnique> sprite_technique_;
         std::unique_ptr<gfx::SpriteMesh> sprite_mesh_;
 

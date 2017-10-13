@@ -19,6 +19,8 @@ namespace gfx {
         void SetEyePos(const Vector3& v);
 
     private:
+        bool OnBuild(GLuint shader_program) override;
+
         unsigned int gViewProj_location_;
         unsigned int gDiffuseMap_location_;
         unsigned int gEyePos_location_;

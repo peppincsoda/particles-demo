@@ -9,7 +9,7 @@ target_include_directories(gfx PUBLIC ${MY_ROOT_DIR})
 find_package(Qt5Gui)
 
 target_link_libraries(gfx
-    filesys
+    core
     Qt5::Gui
 )
 

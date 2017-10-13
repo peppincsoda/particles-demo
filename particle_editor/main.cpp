@@ -1,7 +1,7 @@
 #include <QApplication>
 #include "MainWindow.h"
 
-#include "filesys/FileSystem.h"
+#include "core/FileSystem.h"
 
 #include <QMessageBox>
 
@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    filesys::InitFileSystem(assets_dir);
+    core::InitFileSystem(assets_dir);
 
     particle_editor::MainWindow window;
     window.show();

@@ -21,9 +21,20 @@ namespace gfx {
         Technique(Technique&&) = default;
         Technique& operator=(Technique&&) = default;
 
+        //! Build shader program.
+        bool Build();
+
+        //! Activate shader for rendering.
         void Use();
 
     protected:
+        virtual bool OnBuild(GLuint shader_program);
+
+    private:
+        std::string vs_file_name_;
+        std::string fs_file_name_;
+        std::string gs_file_name_;
+
         GLuint shader_program_;
         GLuint vertex_shader_;
         GLuint geometry_shader_;

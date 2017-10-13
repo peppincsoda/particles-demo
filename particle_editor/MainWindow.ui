@@ -38,13 +38,20 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionToggle_Wireframe"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="propsDockWidget">
+   <property name="features">
+    <set>QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Properties</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
+   <widget class="QWidget" name="propsDockWidgetContents">
     <property name="columnCount" stdset="0">
      <number>2</number>
     </property>

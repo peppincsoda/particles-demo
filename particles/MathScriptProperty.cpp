@@ -1,23 +1,39 @@
 #include "MathScriptProperty.h"
-#include "MathScriptProgram.h"
+#include "ScriptScope.h"
+
+#include "mathscript/MathScript.h"
+#include "core/Logger.h"
 
 namespace particles {
 
-    MathScriptProperty::MathScriptProperty(const std::string& name, MathScriptProgram& program)
+    MathScriptProperty::MathScriptProperty(const std::string& name, std::string& value)
         : name_(name)
-        , program_(program)
+        , value_(value)
     {
 
     }
 
-    void MathScriptProperty::Set(const std::string& str)
+    bool MathScriptProperty::Set(const std::string& str)
     {
-        program_.set_script(str);
+        try {
+            auto p = mathscript::Compile(str);
+
+            // Run the program using our scope to check if it
+            // contains undefined identifiers
+            ScriptScope scope;
+            p.Run(scope);
+        } catch (mathscript::Exception& e) {
+            LOG_WARNING("Compilation of property '%s' failed: %s", name_.c_str(), e.what());
+            return false;
+        }
+
+        value_ = str;
+        return true;
     }
 
     std::string MathScriptProperty::Get() const
     {
-        return program_.script();
+        return value_;
     }
 
     std::string MathScriptProperty::Name() const

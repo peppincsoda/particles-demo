@@ -1,19 +1,34 @@
 #ifndef SPRITEEMITTERTYPE_H
 #define SPRITEEMITTERTYPE_H
 
-#include "Properties.h"
-#include "MathScriptProgram.h"
+#include "mathscript/Program.h"
+
+#include <memory>
+
+namespace gfx {
+    class Texture2D;
+}
 
 namespace particles {
 
-    class SpriteEmitterType : public HasProperties
+    class SpriteEmitterSrc;
+
+    class SpriteEmitterType
     {
     public:
         SpriteEmitterType();
+        ~SpriteEmitterType();
 
-        std::vector<std::unique_ptr<PropertyInterface>> Properties() override;
+        SpriteEmitterType(const SpriteEmitterType&) = default;
+        SpriteEmitterType& operator=(const SpriteEmitterType&) = default;
 
+        SpriteEmitterType(SpriteEmitterType&&) = default;
+        SpriteEmitterType& operator=(SpriteEmitterType&&) = default;
+
+        friend class SpriteEmitterSrc;
         friend class SpriteEmitter;
+
+        gfx::Texture2D* texture();
 
     private:
         float frequency_;
@@ -24,49 +39,49 @@ namespace particles {
         bool  apply_emitter_transform_;
         bool  use_velocity_;
 
-        std::string texture_file_;
+        std::unique_ptr<gfx::Texture2D> texture_;
 
-        MathScriptProgram emitter_position_x_;
-        MathScriptProgram emitter_position_y_;
-        MathScriptProgram emitter_position_z_;
+        mathscript::Program emitter_position_x_;
+        mathscript::Program emitter_position_y_;
+        mathscript::Program emitter_position_z_;
 
-        MathScriptProgram emitter_rotation_x_;
-        MathScriptProgram emitter_rotation_y_;
-        MathScriptProgram emitter_rotation_z_;
+        mathscript::Program emitter_rotation_x_;
+        mathscript::Program emitter_rotation_y_;
+        mathscript::Program emitter_rotation_z_;
 
-        MathScriptProgram emitter_scale_x_;
-        MathScriptProgram emitter_scale_y_;
-        MathScriptProgram emitter_scale_z_;
+        mathscript::Program emitter_scale_x_;
+        mathscript::Program emitter_scale_y_;
+        mathscript::Program emitter_scale_z_;
 
-        MathScriptProgram emitter_color_r_;
-        MathScriptProgram emitter_color_g_;
-        MathScriptProgram emitter_color_b_;
-        MathScriptProgram emitter_color_a_;
+        mathscript::Program emitter_color_r_;
+        mathscript::Program emitter_color_g_;
+        mathscript::Program emitter_color_b_;
+        mathscript::Program emitter_color_a_;
 
-        MathScriptProgram particle_position_x_;
-        MathScriptProgram particle_position_y_;
-        MathScriptProgram particle_position_z_;
+        mathscript::Program particle_position_x_;
+        mathscript::Program particle_position_y_;
+        mathscript::Program particle_position_z_;
 
-        MathScriptProgram particle_velocity_x_;
-        MathScriptProgram particle_velocity_y_;
-        MathScriptProgram particle_velocity_z_;
+        mathscript::Program particle_velocity_x_;
+        mathscript::Program particle_velocity_y_;
+        mathscript::Program particle_velocity_z_;
 
-        MathScriptProgram particle_acceleration_x_;
-        MathScriptProgram particle_acceleration_y_;
-        MathScriptProgram particle_acceleration_z_;
+        mathscript::Program particle_acceleration_x_;
+        mathscript::Program particle_acceleration_y_;
+        mathscript::Program particle_acceleration_z_;
 
-        MathScriptProgram particle_rotation_x_;
-        MathScriptProgram particle_rotation_y_;
-        MathScriptProgram particle_rotation_z_;
+        mathscript::Program particle_rotation_x_;
+        mathscript::Program particle_rotation_y_;
+        mathscript::Program particle_rotation_z_;
 
-        MathScriptProgram particle_scale_x_;
-        MathScriptProgram particle_scale_y_;
-        MathScriptProgram particle_scale_z_;
+        mathscript::Program particle_scale_x_;
+        mathscript::Program particle_scale_y_;
+        mathscript::Program particle_scale_z_;
 
-        MathScriptProgram particle_color_r_;
-        MathScriptProgram particle_color_g_;
-        MathScriptProgram particle_color_b_;
-        MathScriptProgram particle_color_a_;
+        mathscript::Program particle_color_r_;
+        mathscript::Program particle_color_g_;
+        mathscript::Program particle_color_b_;
+        mathscript::Program particle_color_a_;
     };
 
 }

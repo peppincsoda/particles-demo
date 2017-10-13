@@ -8,14 +8,19 @@ namespace gfx {
                     "/shaders/sprite_fragment.glsl",
                     "/shaders/sprite_geometry.glsl")
     {
-        auto glFuncs = GLFuncs();
-        gViewProj_location_ = glFuncs->glGetUniformLocation(shader_program_, "gViewProj");
-        gDiffuseMap_location_ = glFuncs->glGetUniformLocation(shader_program_, "gDiffuseMap");
-        gEyePos_location_ = glFuncs->glGetUniformLocation(shader_program_, "gEyePos");
     }
 
     SpriteTechnique::~SpriteTechnique()
     {
+    }
+
+    bool SpriteTechnique::OnBuild(GLuint shader_program)
+    {
+        auto glFuncs = GLFuncs();
+        gViewProj_location_ = glFuncs->glGetUniformLocation(shader_program, "gViewProj");
+        gDiffuseMap_location_ = glFuncs->glGetUniformLocation(shader_program, "gDiffuseMap");
+        gEyePos_location_ = glFuncs->glGetUniformLocation(shader_program, "gEyePos");
+        return true;
     }
 
     void SpriteTechnique::SetViewProj(const Matrix4x4& m)

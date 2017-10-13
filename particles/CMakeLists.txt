@@ -7,8 +7,9 @@ add_library(particles SHARED ${SRCS})
 target_include_directories(particles PUBLIC ${MY_ROOT_DIR})
 
 target_link_libraries(particles
-    mathscript
+    core
     gfx
+    mathscript
 )
 
 set_target_properties(particles

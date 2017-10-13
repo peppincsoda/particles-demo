@@ -3,11 +3,17 @@
 
 #include "GLApi.h"
 
+#include <memory>
+#include <string>
+
 namespace gfx {
 
     class Texture2D
     {
     public:
+        static bool Load(const std::string& path, std::unique_ptr<Texture2D>& texture);
+        static void LoadOrDefault(const std::string& path, std::unique_ptr<Texture2D>& texture);
+
         Texture2D(GLsizei width, GLsizei height, const GLvoid* pixels);
         ~Texture2D();
 

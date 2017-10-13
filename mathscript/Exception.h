@@ -6,7 +6,16 @@
 
 namespace mathscript {
 
-    using Exception = std::exception;
+    class Exception : public std::exception
+    {
+    public:
+        const char* what() const noexcept override;
+
+        virtual void get_error_str(std::string& s) const = 0;
+
+    private:
+        mutable std::string error_str_;
+    };
 
     /**
      * ParserException is thrown by the Parser on syntax errors.
@@ -33,6 +42,7 @@ namespace mathscript {
     public:
         ExpectedTokenException(int column, const std::string& token);
         ExpectedTokenException(int column, std::string&& token);
+        void get_error_str(std::string& s) const override;
     };
 
     //! The type of token found is invalid at the position.
@@ -41,6 +51,7 @@ namespace mathscript {
     public:
         UnexpectedTokenException(int column, const std::string& token);
         UnexpectedTokenException(int column, std::string&& token);
+        void get_error_str(std::string& s) const override;
     };
 
     /**
@@ -64,6 +75,7 @@ namespace mathscript {
     public:
         FunctionNotFoundException(int ip, const std::string& name);
         FunctionNotFoundException(int ip, std::string&& name);
+        void get_error_str(std::string& s) const override;
 
         const std::string& name() const;
 
@@ -78,6 +90,7 @@ namespace mathscript {
     public:
         FunctionBadNumOfParamsException(int ip, const std::string& name);
         FunctionBadNumOfParamsException(int ip, std::string&& name);
+        void get_error_str(std::string& s) const override;
     };
 
     //! Invalid opcode was encountered.
@@ -85,6 +98,7 @@ namespace mathscript {
     {
     public:
         explicit InvalidOpCodeException(int ip);
+        void get_error_str(std::string& s) const override;
     };
 
     //! Runtime stack underflow.
@@ -92,6 +106,7 @@ namespace mathscript {
     {
     public:
         explicit StackUnderflowException(int ip);
+        void get_error_str(std::string& s) const override;
     };
 
 }

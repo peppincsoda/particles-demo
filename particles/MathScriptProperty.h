@@ -5,20 +5,19 @@
 
 namespace particles {
 
-    class MathScriptProgram;
-
+    //! MathScriptProperty allows only valid MathScript expressions to be set into a string variable
     class MathScriptProperty : public PropertyInterface
     {
     public:
-        MathScriptProperty(const std::string& name, MathScriptProgram& program);
+        MathScriptProperty(const std::string& name, std::string& value);
 
-        void Set(const std::string& str) override;
+        bool Set(const std::string& str) override;
         std::string Get() const override;
         std::string Name() const override;
 
     private:
         std::string name_;
-        MathScriptProgram& program_;
+        std::string& value_;
     };
 
 }

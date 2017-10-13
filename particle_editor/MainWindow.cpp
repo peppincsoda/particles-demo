@@ -2,7 +2,7 @@
 #include "ui_MainWindow.h"
 #include "EditorView.h"
 
-#include "particles/SpriteEmitterType.h"
+#include "particles/SpriteEmitterSrc.h"
 
 #include <QElapsedTimer>
 #include <QTimer>
@@ -73,12 +73,13 @@ namespace particle_editor {
 
     void MainWindow::SetupTree()
     {
+        // Prevent recursion when calling setData
         ui_->treeWidget->blockSignals(true);
 
         ui_->treeWidget->clear();
 
-        if (auto emitter_type = editor_view_->sprite_emitter_type()) {
-            const auto& properties = emitter_type->Properties();
+        if (auto emitter_src = editor_view_->sprite_emitter_src()) {
+            const auto& properties = emitter_src->Properties();
             for (const auto& p : properties) {
 
                 QTreeWidgetItem* item = new QTreeWidgetItem(ui_->treeWidget);
@@ -100,31 +101,25 @@ namespace particle_editor {
         ui_->treeWidget->blockSignals(true);
 
         if (column == 1) {   //  value column
-            if (auto emitter_type = editor_view_->sprite_emitter_type()) {
+            if (auto emitter_src = editor_view_->sprite_emitter_src()) {
                 const std::string name(item->text(0).toStdString());
                 const std::string new_value(item->data(1, Qt::DisplayRole).toString().toStdString());
 
-                bool succeed = false;
                 // NOTE: This is inefficient, we might use an unordered_map to store the properties
-                auto properties = emitter_type->Properties();
+                auto properties = emitter_src->Properties();
                 auto it = std::find_if(std::begin(properties), std::end(properties),
                                        [&name](const auto& p) { return p->Name() == name; });
                 if (it != std::end(properties)) {
-                    try {
-                        (*it)->Set(new_value);
-                        succeed = true;
-                    } catch (std::exception& e) {
-                        QMessageBox::warning(this, "WARNING", e.what());
-
+                    if (!(*it)->Set(new_value)) {
+                        QMessageBox::warning(this, "WARNING",
+                                             QString("Cannot set property %1").arg(name.c_str()));
                         // Revert to the previous value
                         item->setData(1, Qt::DisplayRole, QVariant((*it)->Get().c_str()));
+                    } else {
+                        editor_view_->RestartEffects();
+
+                        item->treeWidget()->clearSelection();
                     }
-                }
-
-                if (succeed) {
-                    editor_view_->RestartEffects();
-
-                    item->treeWidget()->clearSelection();
                 }
             }
         }

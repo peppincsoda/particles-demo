@@ -1,20 +1,11 @@
 #include "FileSystem.h"
+#include "Logger.h"
 
 #include <fstream>
 #include <memory>
 #include <cassert>
 
-namespace filesys {
-
-    FileSystemException::FileSystemException(const std::string& message)
-        : message_(message)
-    {
-    }
-
-    const char* FileSystemException::what() const noexcept
-    {
-        return message_.c_str();
-    }
+namespace core {
 
     FileSystem::FileSystem(const std::string& root_path)
         : root_path_(root_path)
@@ -32,15 +23,16 @@ namespace filesys {
         return root_path_ + path;
     }
 
-    std::string FileSystem::GetFileAsString(const std::string& path) const
+    bool FileSystem::GetFileAsString(const std::string& path, std::string& content) const
     {
         std::ifstream stream(GetRealPath(path));
         if (stream.fail()) {
-            throw FileSystemException(std::string("Cannot open file: ") + path);
+            LOG_WARNING("Cannot open file: %s", path.c_str());
+            return false;
         }
 
-        std::string content((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
-        return content;
+        content = std::string((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
+        return true;
     }
 
 

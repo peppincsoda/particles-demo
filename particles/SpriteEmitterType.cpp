@@ -1,124 +1,68 @@
 #include "SpriteEmitterType.h"
-#include "MathScriptProperty.h"
+
+#include "gfx/Texture2D.h"
 
 namespace particles {
 
     SpriteEmitterType::SpriteEmitterType()
-        : frequency_(30.0f)
-        , count_(1)
-        , particle_life_time_(3000)
+        : frequency_(0)
+        , count_(0)
+        , particle_life_time_(0)
         , apply_emitter_transform_(false)
         , use_velocity_(false)
-        , texture_file_("/textures/white-ink-spot-md.png")
+        , texture_()
 
-        , emitter_position_x_("0")
-        , emitter_position_y_("0")
-        , emitter_position_z_("0")
+        , emitter_position_x_()
+        , emitter_position_y_()
+        , emitter_position_z_()
 
-        , emitter_rotation_x_("0")
-        , emitter_rotation_y_("0")
-        , emitter_rotation_z_("0")
+        , emitter_rotation_x_()
+        , emitter_rotation_y_()
+        , emitter_rotation_z_()
 
-        , emitter_scale_x_("1")
-        , emitter_scale_y_("1")
-        , emitter_scale_z_("1")
+        , emitter_scale_x_()
+        , emitter_scale_y_()
+        , emitter_scale_z_()
 
-        , emitter_color_r_("1")
-        , emitter_color_g_("1")
-        , emitter_color_b_("1")
-        , emitter_color_a_("1")
+        , emitter_color_r_()
+        , emitter_color_g_()
+        , emitter_color_b_()
+        , emitter_color_a_()
 
-        , particle_position_x_("rand1()")
-        , particle_position_y_("rand1()")
-        , particle_position_z_("rand1()")
+        , particle_position_x_()
+        , particle_position_y_()
+        , particle_position_z_()
 
-        , particle_velocity_x_("1")
-        , particle_velocity_y_("1")
-        , particle_velocity_z_("rand() * 0.5")
+        , particle_velocity_x_()
+        , particle_velocity_y_()
+        , particle_velocity_z_()
 
-        , particle_acceleration_x_("0")
-        , particle_acceleration_y_("-1")
-        , particle_acceleration_z_("0")
+        , particle_acceleration_x_()
+        , particle_acceleration_y_()
+        , particle_acceleration_z_()
 
-        , particle_rotation_x_("0")
-        , particle_rotation_y_("0")
-        , particle_rotation_z_("0")
+        , particle_rotation_x_()
+        , particle_rotation_y_()
+        , particle_rotation_z_()
 
-        , particle_scale_x_("0.1")
-        , particle_scale_y_("0.1")
-        , particle_scale_z_("1")
+        , particle_scale_x_()
+        , particle_scale_y_()
+        , particle_scale_z_()
 
-        , particle_color_r_("rand1()")
-        , particle_color_g_("rand1()")
-        , particle_color_b_("rand1()")
-        , particle_color_a_("1 - lifeline")
+        , particle_color_r_()
+        , particle_color_g_()
+        , particle_color_b_()
+        , particle_color_a_()
     {
     }
 
-    std::vector<std::unique_ptr<PropertyInterface>> SpriteEmitterType::Properties()
+    SpriteEmitterType::~SpriteEmitterType()
     {
-        std::vector<std::unique_ptr<PropertyInterface>> r;
 
-        #define ADD_PROPERTY(name) \
-            r.push_back(std::make_unique<Property<decltype(name##_)>>(#name, SpriteEmitterType::name##_))
-
-            ADD_PROPERTY(frequency);
-            ADD_PROPERTY(count);
-            ADD_PROPERTY(particle_life_time);
-            ADD_PROPERTY(apply_emitter_transform);
-            ADD_PROPERTY(use_velocity);
-            ADD_PROPERTY(texture_file);
-
-        #undef ADD_PROPERTY
-
-        #define ADD_PROPERTY(name) \
-            r.push_back(std::make_unique<MathScriptProperty>(#name, name##_))
-
-            ADD_PROPERTY(emitter_position_x);
-            ADD_PROPERTY(emitter_position_y);
-            ADD_PROPERTY(emitter_position_z);
-
-            ADD_PROPERTY(emitter_rotation_x);
-            ADD_PROPERTY(emitter_rotation_y);
-            ADD_PROPERTY(emitter_rotation_z);
-
-            ADD_PROPERTY(emitter_scale_x);
-            ADD_PROPERTY(emitter_scale_y);
-            ADD_PROPERTY(emitter_scale_z);
-
-            ADD_PROPERTY(emitter_color_r);
-            ADD_PROPERTY(emitter_color_g);
-            ADD_PROPERTY(emitter_color_b);
-            ADD_PROPERTY(emitter_color_a);
-
-            ADD_PROPERTY(particle_position_x);
-            ADD_PROPERTY(particle_position_y);
-            ADD_PROPERTY(particle_position_z);
-
-            ADD_PROPERTY(particle_velocity_x);
-            ADD_PROPERTY(particle_velocity_y);
-            ADD_PROPERTY(particle_velocity_z);
-
-            ADD_PROPERTY(particle_acceleration_x);
-            ADD_PROPERTY(particle_acceleration_y);
-            ADD_PROPERTY(particle_acceleration_z);
-
-            ADD_PROPERTY(particle_rotation_x);
-            ADD_PROPERTY(particle_rotation_y);
-            ADD_PROPERTY(particle_rotation_z);
-
-            ADD_PROPERTY(particle_scale_x);
-            ADD_PROPERTY(particle_scale_y);
-            ADD_PROPERTY(particle_scale_z);
-
-            ADD_PROPERTY(particle_color_r);
-            ADD_PROPERTY(particle_color_g);
-            ADD_PROPERTY(particle_color_b);
-            ADD_PROPERTY(particle_color_a);
-
-        #undef ADD_PROPERTY
-
-        return r;
     }
 
+    gfx::Texture2D* SpriteEmitterType::texture()
+    {
+        return texture_.get();
+    }
 }

@@ -1,6 +1,17 @@
 #include "Exception.h"
 
+#include <sstream>
+
 namespace mathscript {
+
+    const char* Exception::what() const noexcept
+    {
+        if (error_str_.empty()) {
+            get_error_str(error_str_);
+        }
+
+        return error_str_.c_str();
+    }
 
     ParserException::ParserException(int column, const std::string& token)
         : column_(column)
@@ -38,6 +49,13 @@ namespace mathscript {
 
     }
 
+    void ExpectedTokenException::get_error_str(std::string& s) const
+    {
+        std::ostringstream os;
+        os << "Expected token '" << token() << "' at column " << column();
+        s = os.str();
+    }
+
     UnexpectedTokenException::UnexpectedTokenException(int column, const std::string& token)
         : ParserException(column, token)
     {
@@ -50,6 +68,12 @@ namespace mathscript {
 
     }
 
+    void UnexpectedTokenException::get_error_str(std::string& s) const
+    {
+        std::ostringstream os;
+        os << "Unexpected token '" << token() << "' at column " << column();
+        s = os.str();
+    }
 
     RuntimeException::RuntimeException(int ip)
         : ip_(ip)
@@ -76,6 +100,18 @@ namespace mathscript {
 
     }
 
+    const std::string& FunctionNotFoundException::name() const
+    {
+        return name_;
+    }
+
+    void FunctionNotFoundException::get_error_str(std::string& s) const
+    {
+        std::ostringstream os;
+        os << "Function '" << name() << "' not found at ip " << ip();
+        s = os.str();
+    }
+
     FunctionBadNumOfParamsException::FunctionBadNumOfParamsException(int ip, const std::string& name)
         : FunctionNotFoundException(ip, name)
     {
@@ -88,9 +124,11 @@ namespace mathscript {
 
     }
 
-    const std::string& FunctionNotFoundException::name() const
+    void FunctionBadNumOfParamsException::get_error_str(std::string& s) const
     {
-        return name_;
+        std::ostringstream os;
+        os << "Bad number of parameters for function '" << name() << "' at ip " << ip();
+        s = os.str();
     }
 
     InvalidOpCodeException::InvalidOpCodeException(int ip)
@@ -99,9 +137,24 @@ namespace mathscript {
 
     }
 
+    void InvalidOpCodeException::get_error_str(std::string& s) const
+    {
+        std::ostringstream os;
+        os << "Invalid opcode at ip " << ip();
+        s = os.str();
+    }
+
     StackUnderflowException::StackUnderflowException(int ip)
         : RuntimeException(ip)
     {
 
     }
+
+    void StackUnderflowException::get_error_str(std::string& s) const
+    {
+        std::ostringstream os;
+        os << "Stack underflow at ip " << ip();
+        s = os.str();
+    }
+
 }

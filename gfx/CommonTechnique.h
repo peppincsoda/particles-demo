@@ -15,6 +15,8 @@ namespace gfx {
         void SetWorldViewProj(const Matrix4x4& wvp);
 
     private:
+        bool OnBuild(GLuint shader_program) override;
+
         GLuint gWorldViewProj_location_;
     };
 
