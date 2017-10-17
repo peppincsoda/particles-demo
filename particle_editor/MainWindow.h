@@ -12,6 +12,7 @@ class QSlider;
 namespace particle_editor {
 
     class EditorView;
+    class EditorLogger;
     class PropertiesModel;
     class PropertiesTreeView;
 
@@ -29,8 +30,10 @@ namespace particle_editor {
     private:
         void AddPropertiesDockWidget();
         void AddControlsDockWidget();
+        void AddLogsDockWidget();
 
         std::unique_ptr<EditorView>     editor_view_;
+        std::unique_ptr<EditorLogger>   editor_logger_;
         std::unique_ptr<QElapsedTimer>  elapsed_timer_;
         int64_t         last_update_time_;
         QTimer*         timer_;

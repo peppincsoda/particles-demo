@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "EditorView.h"
+#include "EditorLogger.h"
 #include "PropertiesModel.h"
 #include "PropertiesTreeView.h"
 
@@ -20,9 +21,20 @@
 
 namespace particle_editor {
 
+    static void AddDockWidget(QMainWindow* mainWindow, const QString& objectName, const QString& windowTitle, Qt::DockWidgetArea area, QWidget* widget)
+    {
+        auto* r = new QDockWidget(QString(), mainWindow);
+        r->setObjectName(objectName);
+        r->setWindowTitle(windowTitle);
+        r->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+        r->setWidget(widget);
+        mainWindow->addDockWidget(area, r);
+    }
+
     MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , editor_view_(nullptr)
+    , editor_logger_(nullptr)
     , elapsed_timer_(nullptr)
     , last_update_time_(0)
     , timer_(nullptr)
@@ -45,6 +57,7 @@ namespace particle_editor {
 
         AddPropertiesDockWidget();
         AddControlsDockWidget();
+        AddLogsDockWidget();
 
         elapsed_timer_ = std::make_unique<QElapsedTimer>();
         elapsed_timer_->start();
@@ -66,12 +79,7 @@ namespace particle_editor {
         properties_view_->setModel(properties_model_.get());
         properties_view_->setColumnWidth(0, 150);
 
-        auto* r = new QDockWidget(QString(), this);
-        r->setObjectName("propertiesDockWidget");
-        r->setWindowTitle(tr("Properties"));
-        r->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-        r->setWidget(properties_view_);
-        addDockWidget(Qt::RightDockWidgetArea, r);
+        AddDockWidget(this, "propertiesDockWidget", tr("Properties"), Qt::RightDockWidgetArea, properties_view_);
     }
 
     void MainWindow::AddControlsDockWidget()
@@ -98,12 +106,17 @@ namespace particle_editor {
             w->setLayout(l);
         }
 
-        auto* r = new QDockWidget(QString(), this);
-        r->setObjectName("controlsDockWidget");
-        r->setWindowTitle(tr("Controls"));
-        r->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-        r->setWidget(w);
-        addDockWidget(Qt::RightDockWidgetArea, r);
+        AddDockWidget(this, "controlsDockWidget", tr("Controls"), Qt::RightDockWidgetArea, w);
+    }
+
+    void MainWindow::AddLogsDockWidget()
+    {
+        auto* text_edit = new QTextEdit(this);
+        text_edit->setReadOnly(true);
+        AddDockWidget(this, "logsDockWidget", tr("Logs"), Qt::BottomDockWidgetArea, text_edit);
+
+        editor_logger_ = std::make_unique<EditorLogger>(text_edit);
+        core::SetLogger(editor_logger_.get());
     }
 
     void MainWindow::Update()
