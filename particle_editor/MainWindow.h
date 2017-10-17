@@ -31,6 +31,7 @@ namespace particle_editor {
         void AddPropertiesDockWidget();
         void AddControlsDockWidget();
         void AddLogsDockWidget();
+        void AddHelpDockWidget();
 
         std::unique_ptr<EditorView>     editor_view_;
         std::unique_ptr<EditorLogger>   editor_logger_;

@@ -26,7 +26,7 @@ namespace particle_editor {
         char message[1024];
         vsnprintf(message, sizeof(message), format, arg_list);
 
-        QString str("<p>%1(%2): <font color='%3'>%4:</font> %5</p>");
+        QString str("%1(%2): <font color='%3'>%4:</font> %5<br>");
         switch (level) {
         case core::LogLevel::Error:
             str = str.arg(file_name, QString::number(line), "red", "ERROR", message);

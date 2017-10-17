@@ -5,6 +5,8 @@
 #include "PropertiesTreeView.h"
 
 #include "particles/SpriteEmitterSrc.h"
+#include "core/FileSystem.h"
+#include "core/Logger.h"
 
 #include <QElapsedTimer>
 #include <QTimer>
@@ -58,6 +60,7 @@ namespace particle_editor {
         AddPropertiesDockWidget();
         AddControlsDockWidget();
         AddLogsDockWidget();
+        AddHelpDockWidget();
 
         elapsed_timer_ = std::make_unique<QElapsedTimer>();
         elapsed_timer_->start();
@@ -113,10 +116,22 @@ namespace particle_editor {
     {
         auto* text_edit = new QTextEdit(this);
         text_edit->setReadOnly(true);
-        AddDockWidget(this, "logsDockWidget", tr("Logs"), Qt::BottomDockWidgetArea, text_edit);
+        AddDockWidget(this, "logsDockWidget", tr("Logs"), Qt::LeftDockWidgetArea, text_edit);
 
         editor_logger_ = std::make_unique<EditorLogger>(text_edit);
         core::SetLogger(editor_logger_.get());
+    }
+
+    void MainWindow::AddHelpDockWidget()
+    {
+        std::string str;
+        if (!core::TheFileSystem().GetFileAsString("/docs/help.html", str))
+            return;
+
+        auto* text_edit = new QTextEdit(this);
+        text_edit->setReadOnly(true);
+        text_edit->insertHtml(QString::fromStdString(str));
+        AddDockWidget(this, "helpDockWidget", tr("Help"), Qt::LeftDockWidgetArea, text_edit);
     }
 
     void MainWindow::Update()
