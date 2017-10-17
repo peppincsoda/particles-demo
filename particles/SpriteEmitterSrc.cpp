@@ -63,21 +63,23 @@ namespace particles {
     {
     }
 
-    std::vector<std::unique_ptr<PropertyInterface>> SpriteEmitterSrc::Properties()
+    std::vector<std::unique_ptr<core::PropertyInterface>> SpriteEmitterSrc::Properties()
     {
-        std::vector<std::unique_ptr<PropertyInterface>> r;
+        std::vector<std::unique_ptr<core::PropertyInterface>> r;
 
         #define ADD_PROPERTY(name) \
-            r.push_back(std::make_unique<Property<decltype(name##_)>>(#name, name##_))
+            r.push_back(std::make_unique<core::Property<decltype(name##_)>>(#name, name##_))
 
             ADD_PROPERTY(frequency);
             ADD_PROPERTY(count);
             ADD_PROPERTY(particle_life_time);
             ADD_PROPERTY(apply_emitter_transform);
             ADD_PROPERTY(use_velocity);
-            ADD_PROPERTY(texture_file);
 
         #undef ADD_PROPERTY
+
+            r.push_back(std::make_unique<core::Property<decltype(texture_file_),
+                        core::PropertyType::ImagePath>>("texture_file", texture_file_));
 
         #define ADD_PROPERTY(name) \
             r.push_back(std::make_unique<MathScriptProperty>(#name, name##_))

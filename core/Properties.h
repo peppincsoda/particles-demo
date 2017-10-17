@@ -6,7 +6,7 @@
 #include <memory>
 
 
-namespace particles {
+namespace core {
 
     bool FromString(const std::string& str, bool& v);
     std::string ToString(bool v);
@@ -20,6 +20,44 @@ namespace particles {
     bool FromString(const std::string& str, std::string& v);
     std::string ToString(const std::string& v);
 
+    enum class PropertyType
+    {
+        Invalid,
+        Boolean,
+        Integer,
+        Double,
+        Script,
+        ImagePath,
+    };
+
+    template<class _T>
+    struct DefaultType
+    {
+    };
+
+    template<> struct DefaultType<bool>
+    {
+        static const auto value = PropertyType::Boolean;
+    };
+
+    template<>
+    struct DefaultType<int>
+    {
+        static const auto value = PropertyType::Integer;
+    };
+
+    template<>
+    struct DefaultType<float>
+    {
+        static const auto value = PropertyType::Double;
+    };
+
+    template<>
+    struct DefaultType<double>
+    {
+        static const auto value = PropertyType::Double;
+    };
+
 
     class PropertyInterface
     {
@@ -28,6 +66,7 @@ namespace particles {
         virtual bool Set(const std::string& str) = 0;
         virtual std::string Get() const = 0;
         virtual std::string Name() const = 0;
+        virtual PropertyType Type() const = 0;
     };
 
 
@@ -39,7 +78,7 @@ namespace particles {
     };
 
 
-    template<class _T>
+    template<class _T, PropertyType _Type = DefaultType<_T>::value>
     class Property : public PropertyInterface
     {
     public:
@@ -63,6 +102,11 @@ namespace particles {
         std::string Name() const override
         {
             return name_;
+        }
+
+        PropertyType Type() const override
+        {
+            return _Type;
         }
 
     private:

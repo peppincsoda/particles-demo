@@ -67,21 +67,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QTreeWidget" name="treeWidget">
-       <property name="columnCount">
-        <number>2</number>
-       </property>
-       <column>
-        <property name="text">
-         <string notr="true">Name</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Value</string>
-        </property>
-       </column>
-      </widget>
+      <widget class="particle_editor::PropertiesTreeView" name="treeView"/>
      </item>
     </layout>
    </widget>

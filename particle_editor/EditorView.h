@@ -32,11 +32,11 @@ namespace particle_editor {
 
         particles::SpriteEmitterSrc* sprite_emitter_src();
 
-        void RestartEffects();
+        void AdvanceEffects(int64_t current_time, int time_delta);
 
     public slots:
         void SetWireframeMode(bool on);
-        void AdvanceEffects(int64_t current_time, int time_delta);
+        void RestartEffects();
 
     private:
         void initializeGL() override;

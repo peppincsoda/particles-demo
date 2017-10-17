@@ -11,11 +11,11 @@ namespace Ui {
 
 class QElapsedTimer;
 class QTimer;
-class QTreeWidgetItem;
 
 namespace particle_editor {
 
     class EditorView;
+    class PropertiesModel;
 
     class MainWindow : public QMainWindow
     {
@@ -24,9 +24,6 @@ namespace particle_editor {
     public:
         explicit MainWindow(QWidget* parent = nullptr);
         ~MainWindow();
-
-    public slots:
-        void onPropertyChanged(QTreeWidgetItem* item, int column);
 
     private slots:
         void Update();
@@ -39,6 +36,8 @@ namespace particle_editor {
         std::unique_ptr<QElapsedTimer>  elapsed_timer_;
         int64_t         last_update_time_;
         QTimer*         timer_;
+
+        std::unique_ptr<PropertiesModel> properties_model_;
     };
 
 }

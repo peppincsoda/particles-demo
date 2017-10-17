@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-namespace particles {
+namespace core {
 
     bool FromString(const std::string& str, bool& v)
     {

@@ -1,0 +1,9 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/images/property_types">
+    <file alias="boolean.png">images/letter-b.png</file>
+    <file alias="integer.png">images/letter-i.png</file>
+    <file alias="double.png">images/letter-f.png</file>
+    <file alias="script.png">images/function-mathematical-symbol.png</file>
+    <file alias="image_path.png">images/png.png</file>
+</qresource>
+</RCC>

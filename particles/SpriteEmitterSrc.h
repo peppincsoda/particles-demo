@@ -2,14 +2,14 @@
 #define SPRITEEMITTERSRC_H
 
 
-#include "Properties.h"
+#include "core/Properties.h"
 
 
 namespace particles {
 
     class SpriteEmitterType;
 
-    class SpriteEmitterSrc : public HasProperties
+    class SpriteEmitterSrc : public core::HasProperties
     {
     public:
         SpriteEmitterSrc();
@@ -20,7 +20,7 @@ namespace particles {
         SpriteEmitterSrc(SpriteEmitterSrc&&) = default;
         SpriteEmitterSrc& operator=(SpriteEmitterSrc&&) = default;
 
-        std::vector<std::unique_ptr<PropertyInterface>> Properties() override;
+        std::vector<std::unique_ptr<core::PropertyInterface>> Properties() override;
 
         std::unique_ptr<SpriteEmitterType> Build() const;
 

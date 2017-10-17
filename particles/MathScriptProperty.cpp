@@ -41,4 +41,9 @@ namespace particles {
         return name_;
     }
 
+    core::PropertyType MathScriptProperty::Type() const
+    {
+        return core::PropertyType::Script;
+    }
+
 }

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 
-file(GLOB SRCS *.cpp)
+file(GLOB SRCS *.cpp *.ui *.qrc)
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -8,6 +8,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
 set(CMAKE_AUTOUIC ON)
+
+set(CMAKE_AUTORCC ON)
 
 find_package(Qt5Widgets)
 

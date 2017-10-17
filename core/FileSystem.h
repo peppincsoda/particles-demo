@@ -18,7 +18,10 @@ namespace core {
         FileSystem& operator=(FileSystem&&) = default;
 
         std::string GetRealPath(const std::string& path) const;
+        std::string GetVirtPath(const std::string& path) const;
         bool GetFileAsString(const std::string& path, std::string& content) const;
+
+        const std::string& GetRootPath() const;
 
     private:
         std::string root_path_;

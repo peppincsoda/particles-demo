@@ -1,12 +1,12 @@
 #ifndef MATHSCRIPTPROPERTY_H
 #define MATHSCRIPTPROPERTY_H
 
-#include "Properties.h"
+#include "core/Properties.h"
 
 namespace particles {
 
     //! MathScriptProperty allows only valid MathScript expressions to be set into a string variable
-    class MathScriptProperty : public PropertyInterface
+    class MathScriptProperty : public core::PropertyInterface
     {
     public:
         MathScriptProperty(const std::string& name, std::string& value);
@@ -14,6 +14,7 @@ namespace particles {
         bool Set(const std::string& str) override;
         std::string Get() const override;
         std::string Name() const override;
+        core::PropertyType Type() const override;
 
     private:
         std::string name_;
