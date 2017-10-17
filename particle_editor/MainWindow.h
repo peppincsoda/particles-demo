@@ -5,17 +5,15 @@
 
 #include <memory>
 
-namespace Ui {
-    class MainWindow;
-}
-
 class QElapsedTimer;
 class QTimer;
+class QSlider;
 
 namespace particle_editor {
 
     class EditorView;
     class PropertiesModel;
+    class PropertiesTreeView;
 
     class MainWindow : public QMainWindow
     {
@@ -29,15 +27,18 @@ namespace particle_editor {
         void Update();
 
     private:
-        void SetupTree();
+        void AddPropertiesDockWidget();
+        void AddControlsDockWidget();
 
-        std::unique_ptr<Ui::MainWindow> ui_;
         std::unique_ptr<EditorView>     editor_view_;
         std::unique_ptr<QElapsedTimer>  elapsed_timer_;
         int64_t         last_update_time_;
         QTimer*         timer_;
 
         std::unique_ptr<PropertiesModel> properties_model_;
+        PropertiesTreeView* properties_view_;
+
+        QSlider* speed_slider_;
     };
 
 }
